@@ -9,7 +9,8 @@
 namespace FetchApp\API;
 
 
-class EnumEmulator {
+class EnumEmulator
+{
 
     public static function getName($const, $className)
     {
@@ -20,11 +21,19 @@ class EnumEmulator {
             if ($value == $const)
                 return $name;
         }
-
-        //Nothing was found
-        return -1;
+        return false;
     }
 
+    public static function getOptions($className)
+    {
+        $fakeEnumClass = new \ReflectionClass($className);
+        $constants = $fakeEnumClass->getConstants();
+        $options = array();
+        foreach ($constants as $name => $value) {
+            $options[] = $name;
+        }
+        return $options;
+    }
 
 
 }

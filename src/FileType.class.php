@@ -7,13 +7,23 @@
  */
 
 namespace FetchApp\API;
-include "EnumEmulator.class.php";
+include_once "EnumEmulator.class.php";
 
-class FileType extends EnumEmulator {
+
+class FileType extends EnumEmulator
+{
     const Download = 0;
     const Link = 1;
 
-    public static function getName($const){
-        return parent::getName($const, "FetchApp\\API\\FileType");
+    private static $className = "FetchApp\\API\\FileType";
+
+    public static function getName($const)
+    {
+        return parent::getName($const, FileType::$className);
+    }
+
+    public static function getOptions()
+    {
+        return parent::getOptions(FileType::$className);
     }
 }

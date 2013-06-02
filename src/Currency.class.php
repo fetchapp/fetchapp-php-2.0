@@ -6,10 +6,11 @@
  * Time: 1:21 PM
  */
 namespace FetchApp\API;
-include "EnumEmulator.class.php";
+include_once "EnumEmulator.class.php";
 
 class Currency extends EnumEmulator
 {
+    private static $className = "FetchApp\\API\\Currency";
     /**
      * Australian Dollar
      */
@@ -51,7 +52,13 @@ class Currency extends EnumEmulator
      */
     const XCD = 9;
 
-    public static function getName($const){
-        return parent::getName($const, "FetchApp\\API\\Currency");
+    public static function getName($const)
+    {
+        return parent::getName($const, Currency::$className);
+    }
+
+    public static function getOptions()
+    {
+        return parent::getOptions(Currency::$className);
     }
 }
