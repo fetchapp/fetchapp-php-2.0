@@ -7,8 +7,13 @@
  */
 
 namespace FetchApp\API;
+include "EnumEmulator.class.php";
 
+class FileType extends EnumEmulator {
+    const Download = 0;
+    const Link = 1;
 
-class FileType {
-
+    public static function getName($const){
+        return parent::getName($const, "FetchApp\\API\\FileType");
+    }
 }
