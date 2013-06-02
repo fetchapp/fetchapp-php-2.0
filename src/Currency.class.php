@@ -5,10 +5,53 @@
  * Date: 6/1/13
  * Time: 1:21 PM
  */
-
 namespace FetchApp\API;
+include "EnumEmulator.class.php";
 
+class Currency extends EnumEmulator
+{
+    /**
+     * Australian Dollar
+     */
+    const AUD = 0;
+    /**
+     * United States Dollar
+     */
+    const USD = 1;
+    /**
+     * Euro
+     */
+    const EUR = 2;
+    /**
+     * Pound Sterling
+     */
+    const GBP = 3;
+    /**
+     * Danish Krone
+     */
+    const DKK = 4;
+    /**
+     * Chinese Yuan
+     */
+    const CNY = 5;
+    /**
+     * Norwegian Krone
+     */
+    const NOK = 6;
+    /**
+     * New Zealand Dollar
+     */
+    const NZD = 7;
+    /**
+     * Russian Rouble
+     */
+    const RUB = 8;
+    /**
+     * East Caribbean Dollar
+     */
+    const XCD = 9;
 
-class Currency {
-
+    public static function getName($const){
+        return parent::getName($const, "FetchApp\\API\\Currency");
+    }
 }
