@@ -32,6 +32,7 @@ class FetchApp
     public function setAuthenticationKey($AuthenticationKey)
     {
         $this->AuthenticationKey = $AuthenticationKey;
+        APIWrapper::setAuthenticationKey($AuthenticationKey);
     }
 
     /**
@@ -48,6 +49,7 @@ class FetchApp
     public function setAuthenticationToken($AuthenticationToken)
     {
         $this->AuthenticationToken = $AuthenticationToken;
+        APIWrapper::setAuthenticationToken($AuthenticationToken);
     }
 
     /**
@@ -65,7 +67,24 @@ class FetchApp
     {
         $this->verifyReadiness();
         $detail = new AccountDetail();
-
+        $results = APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/account", "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            $detail->setAccountID($results->id);
+            $detail->setAccountName($results->name);
+            $detail->setEmailAddress($results->email);
+            $detail->setURL($results->url);
+            $detail->setBillingEmail($results->billing_email);
+            if (!isset($results->order_expiration_in_hours['nil'])) {
+                $detail->setOrderExpirationInHours($results->order_expiration_in_hours);
+            } else {
+                $detail->setOrderExpirationInHours(-1);
+            }
+            $detail->setItemDownloadLimit($results->download_limit_per_item);
+            $detail->setCurrency(Currency::getValue($results->currency));
+            $detail->setCreationDate(new \DateTime($results->created_at));
+            $detail->setAPIKey($results->api_key);
+            $detail->setAPIToken($results->api_token);
+        }
         return $detail;
     }
 
