@@ -27,4 +27,9 @@ class OrderStatus extends EnumEmulator
     {
         return parent::getOptions(OrderStatus::$className);
     }
+
+    public static function getValue($name)
+    {
+        return parent::getValue($name, OrderStatus::$className);
+    }
 }

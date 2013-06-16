@@ -26,4 +26,9 @@ class FileType extends EnumEmulator
     {
         return parent::getOptions(FileType::$className);
     }
+
+    public static function getValue($name)
+    {
+        return parent::getValue($name, FileType::$className);
+    }
 }

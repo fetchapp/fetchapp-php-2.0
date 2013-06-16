@@ -35,5 +35,17 @@ class EnumEmulator
         return $options;
     }
 
+    public static function getValue($name, $className)
+    {
+        $fakeEnumClass = new \ReflectionClass($className);
+        $constants = $fakeEnumClass->getConstants();
+
+        foreach ($constants as $n => $v) {
+            if ($n == $name)
+                return $v;
+        }
+        return false;
+    }
+
 
 }

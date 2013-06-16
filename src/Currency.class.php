@@ -61,4 +61,9 @@ class Currency extends EnumEmulator
     {
         return parent::getOptions(Currency::$className);
     }
+
+    public static function getValue($name)
+    {
+        return parent::getValue($name, Currency::$className);
+    }
 }
