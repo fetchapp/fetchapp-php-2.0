@@ -11,8 +11,25 @@ namespace FetchApp\API;
 
 class APIWrapper
 {
-    private static $apiToken;
-    private static $apiKey;
+    private static $AuthenticationToken;
+    private static $AuthenticationKey;
+
+    /**
+     * @param string $key
+     */
+    public static function setAuthenticationKey($key)
+    {
+        self::$AuthenticationKey = $key;
+    }
+
+    /**
+     * @param string $token
+     */
+    public static function setAuthenticationToken($token)
+    {
+        self::$AuthenticationToken = $token;
+    }
+
 
     /**
      * Makes a request to the FetchApp API.
@@ -26,7 +43,7 @@ class APIWrapper
      */
     public static function makeRequest($url, $method, $data = null)
     {
-        $credentials = self::$apiKey . ':' . self::$apiToken;
+        $credentials = self::$AuthenticationKey . ':' . self::$AuthenticationToken;
         $headers = array(
             'Content-type: application/xml',
             'Authorization: Basic ' . base64_encode($credentials),
