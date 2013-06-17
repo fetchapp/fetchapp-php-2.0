@@ -112,6 +112,18 @@ class FetchApp
     }
 
     /**
+     * @return bool True on success, otherwise False.
+     */
+    public function getNewToken()
+    {
+        $success = false;
+        $result = APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/new_token", "GET");
+        $this->setAuthenticationToken($result[0]);
+        $success = true;
+        return $success;
+    }
+
+    /**
      * @throws \Exception
      */
     private function verifyReadiness()

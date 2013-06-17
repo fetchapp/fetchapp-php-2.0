@@ -239,14 +239,4 @@ class AccountDetail
     {
         return $this->URL;
     }
-
-    /**
-     * @return bool True on success, otherwise False.
-     */
-    public function getNewToken()
-    {
-        $success = false;
-        // TODO: Actually get the new token and assign it to the token variable.
-        return $success;
-    }
 }
