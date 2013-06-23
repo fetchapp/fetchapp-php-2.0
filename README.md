@@ -35,3 +35,54 @@ catch (Exception $e){
     echo $e->getMessage();
 }
 ```
+
+## Getting Order Information
+
+```php
+use FetchApp\API\FetchApp;
+use FetchApp\API\OrderStatus;
+
+// Create a new FetchApp instance
+$fetch = new FetchApp();
+
+// Set the Authentication data (needed for all requests)
+$fetch->setAuthenticationKey("demokey");
+$fetch->setAuthenticationToken("demotoken");;
+try{
+    // Let's grab our Orders!
+    $orders = $fetch->getOrders(); // Grabs all orders (potentially HUGE!)
+                    // or
+    $orders = $fetch->getOrders(OrderStatus::All, 50, 4); // Grabs orders of all types, 50 per page, page 4.
+                    // or
+    $orders = $fetch->getOrders(OrderStatus::Expired); // Grabs all expired orders.
+                    // or
+    $orders = $fetch->getOrders(OrderStatus::Open); // Grabs all open orders
+}
+catch (Exception $e){
+    // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
+    echo $e->getMessage();
+}
+// Now let's print our results!
+foreach ($orders as $order) {
+    echo $order->getOrderID().PHP_EOL;
+    echo $order->getVendorID().PHP_EOL;
+    echo $order->getFirstName().PHP_EOL;
+    echo $order->getLastName().PHP_EOL;
+    echo $order->getEmailAddress().PHP_EOL;
+    echo $order->getTotal().PHP_EOL;
+    echo $order->getCurrency().PHP_EOL;
+    echo $order->getStatus().PHP_EOL;
+    echo $order->getProductCount().PHP_EOL;
+    echo $order->getDownloadCount().PHP_EOL;
+    $expirationDate = $order->getExpirationDate();
+    // Since ExpirationDate is a DateTime, we need to print it with a format.
+    echo $expirationDate->format('F j, Y').PHP_EOL;
+    echo $order->getDownloadLimit().PHP_EOL;
+    echo $order->getCustom1().PHP_EOL;
+    echo $order->getCustom2().PHP_EOL;
+    echo $order->getCustom3().PHP_EOL;
+    $creationDate = $order->getCreationDate();
+    // Since CreationDate is a DateTime, we need to print it with a format.
+    echo $creationDate->format('F j, Y').PHP_EOL;
+}
+```
