@@ -97,7 +97,56 @@ class FetchApp
     public function getOrders($status = OrderStatus::All, $itemsPerPage = -1, $pageNumber = -1)
     {
         $orders = array();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders.xml?";
+        if ($status != OrderStatus::All) {
+            $requestURL .= "status=" . strtolower(OrderStatus::getName($status));
+        }
+        if ($itemsPerPage != -1) {
+            $requestURL .= ($status != OrderStatus::All) ? "&" : "";
+            $requestURL .= "per_page=" . $itemsPerPage;
+        }
+        if ($pageNumber != -1) {
+            $requestURL .= ($status != OrderStatus::All || $itemsPerPage != -1) ? "&" : "";
+            $requestURL .= "page=" . $pageNumber;
+        }
+        $requestURL = rtrim($requestURL, '?');
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            foreach ($results->order as $order) {
+                $tempOrder = new Order();
+                $tempOrder->setOrderID($order->id);
+                $tempOrder->setVendorID($order->vendor_id);
+                $tempOrder->setFirstName($order->first_name);
+                $tempOrder->setLastName($order->last_name);
+                $tempOrder->setEmailAddress($order->email_address);
+                $tempOrder->setTotal($order->total);
+                $tempOrder->setCurrency(Currency::getValue($order->currency));
+                $tempOrder->setStatus(OrderStatus::getValue($order->status));
+                $tempOrder->setProductCount($order->product_count);
+                $tempOrder->setDownloadCount($order->download_count);
+                $tempOrder->setExpirationDate(new \DateTime($order->expiration_date));
+                $tempOrder->setDownloadLimit($order->download_limit);
+                if (!isset($order->custom1['nil'])) {
+                    $tempOrder->setCustom1($order->custom1);
+                } else {
+                    $tempOrder->setCustom1(null);
+                }
+                if (!isset($order->custom2['nil'])) {
+                    $tempOrder->setCustom2($order->custom2);
+                } else {
+                    $tempOrder->setCustom2(null);
+                }
+                if (!isset($order->custom3['nil'])) {
+                    $tempOrder->setCustom3($order->custom3);
+                } else {
+                    $tempOrder->setCustom3(null);
+                }
+                $tempOrder->setCreationDate(new \DateTime($order->created_at));
+                $tempOrder->setLink($order->link['href']);
+                $orders[] = $tempOrder;
+            }
 
+        }
         return $orders;
     }
 

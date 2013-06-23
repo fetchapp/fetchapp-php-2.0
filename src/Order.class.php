@@ -76,6 +76,10 @@ class Order
      * @var $CreationDate \DateTime
      */
     private $CreationDate;
+    /**
+     * @var $Link string
+     */
+    private $Link;
 
     /**
      * @param \DateTime $CreationDate
@@ -331,6 +335,22 @@ class Order
     public function getVendorID()
     {
         return $this->VendorID;
+    }
+
+    /**
+     * @param string $Link
+     */
+    public function setLink($Link)
+    {
+        $this->Link = $Link;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLink()
+    {
+        return $this->Link;
     }
 
     /**
