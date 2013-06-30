@@ -151,6 +151,50 @@ class FetchApp
     }
 
     /**
+     * @param $orderID
+     * @return Order
+     */
+    public function getOrder($orderID)
+    {
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $orderID;
+        $requestURL = rtrim($requestURL, '?');
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            $tempOrder = new Order();
+            $tempOrder->setOrderID($results->id);
+            $tempOrder->setVendorID($results->vendor_id);
+            $tempOrder->setFirstName($results->first_name);
+            $tempOrder->setLastName($results->last_name);
+            $tempOrder->setEmailAddress($results->email_address);
+            $tempOrder->setTotal($results->total);
+            $tempOrder->setCurrency(Currency::getValue($results->currency));
+            $tempOrder->setStatus(OrderStatus::getValue($results->status));
+            $tempOrder->setProductCount($results->product_count);
+            $tempOrder->setDownloadCount($results->download_count);
+            $tempOrder->setExpirationDate(new \DateTime($results->expiration_date));
+            $tempOrder->setDownloadLimit($results->download_limit);
+            if (!isset($results->custom1['nil'])) {
+                $tempOrder->setCustom1($results->custom1);
+            } else {
+                $tempOrder->setCustom1(null);
+            }
+            if (!isset($results->custom2['nil'])) {
+                $tempOrder->setCustom2($results->custom2);
+            } else {
+                $tempOrder->setCustom2(null);
+            }
+            if (!isset($results->custom3['nil'])) {
+                $tempOrder->setCustom3($results->custom3);
+            } else {
+                $tempOrder->setCustom3(null);
+            }
+            $tempOrder->setCreationDate(new \DateTime($results->created_at));
+            $tempOrder->setLink($results->link['href']);
+        }
+        return $tempOrder;
+    }
+
+    /**
      * @return OrderDownload[]
      */
     public function getDownloads()
