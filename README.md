@@ -47,7 +47,7 @@ $fetch = new FetchApp();
 
 // Set the Authentication data (needed for all requests)
 $fetch->setAuthenticationKey("demokey");
-$fetch->setAuthenticationToken("demotoken");
+$fetch->setAuthenticationToken("demotoken");;
 try{
     // Let's grab our Orders!
     $orders = $fetch->getOrders(); // Grabs all orders (potentially HUGE!)
