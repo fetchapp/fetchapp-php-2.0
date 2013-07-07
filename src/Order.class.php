@@ -364,9 +364,19 @@ class Order
     /**
      *
      */
-    public function expire($resetExpiration = false, \DateTime $expirationDate = null, $downloadLimit = -1)
+    public function resetExpiration($resetExpiration = false, \DateTime $expirationDate = null, $downloadLimit = -1)
     {
 
+    }
+
+    /**
+     *
+     */
+    public function expire()
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/expire";
+        APIWrapper::makeRequest($requestURL, "GET");
     }
 
     public function sendDownloadEmail()
