@@ -96,6 +96,7 @@ class FetchApp
      */
     public function getOrders($status = OrderStatus::All, $itemsPerPage = -1, $pageNumber = -1)
     {
+        $this->verifyReadiness();
         $orders = array();
         $requestURL = "https://app.fetchapp.com/api/v2/orders.xml?";
         if ($status != OrderStatus::All) {
@@ -156,8 +157,8 @@ class FetchApp
      */
     public function getOrder($orderID)
     {
+        $this->verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $orderID;
-        $requestURL = rtrim($requestURL, '?');
         $results = APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             $tempOrder = new Order();
@@ -221,9 +222,7 @@ class FetchApp
      */
     private function verifyReadiness()
     {
-        if (empty($this->AuthenticationKey) || empty($this->AuthenticationToken)) {
-            throw new \Exception("You must configure an Authentication Key and an Authentication Token before you can connect to FetchApp.");
-        }
+        APIWrapper::verifyReadiness();
     }
 
 

@@ -70,4 +70,11 @@ class APIWrapper
         curl_close($ch);
         return simplexml_load_string($ch_data);
     }
+
+    public static function verifyReadiness()
+    {
+        if (empty(self::$AuthenticationKey) || empty(self::$AuthenticationToken)) {
+            throw new \Exception("You must configure an Authentication Key and an Authentication Token before you can connect to FetchApp.");
+        }
+    }
 }
