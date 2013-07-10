@@ -119,7 +119,7 @@ class FetchApp
                 $tempOrder->setVendorID($order->vendor_id);
                 $tempOrder->setFirstName($order->first_name);
                 $tempOrder->setLastName($order->last_name);
-                $tempOrder->setEmailAddress($order->email_address);
+                $tempOrder->setEmailAddress($order->email);
                 $tempOrder->setTotal($order->total);
                 $tempOrder->setCurrency(Currency::getValue($order->currency));
                 $tempOrder->setStatus(OrderStatus::getValue($order->status));
@@ -166,7 +166,7 @@ class FetchApp
             $tempOrder->setVendorID($results->vendor_id);
             $tempOrder->setFirstName($results->first_name);
             $tempOrder->setLastName($results->last_name);
-            $tempOrder->setEmailAddress($results->email_address);
+            $tempOrder->setEmailAddress($results->email);
             $tempOrder->setTotal($results->total);
             $tempOrder->setCurrency(Currency::getValue($results->currency));
             $tempOrder->setStatus(OrderStatus::getValue($results->status));

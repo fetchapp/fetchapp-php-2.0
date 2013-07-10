@@ -80,6 +80,16 @@ class Order
      * @var $Link string
      */
     private $Link;
+    /**
+     * @var $items OrderItem[]
+     */
+    private $items;
+
+    function __construct()
+    {
+        $this->items = array();
+    }
+
 
     /**
      * @param \DateTime $CreationDate
@@ -354,11 +364,29 @@ class Order
     }
 
     /**
-     * @param OrderItem[] $items
+     * @param array $items
+     * @param bool $sendEmail
+     * @return bool
      */
-    public function create(array $items)
+    public function create(array $items, $sendEmail = true)
     {
-
+        APIWrapper::verifyReadiness();
+        $this->items = $items;
+        $url = "https://app.fetchapp.com/api/v2/orders/create";
+        $data = $this->toXML();
+        $response = APIWrapper::makeRequest($url, "POST", $data);
+        if (isset($response->id)) {
+            // It worked, let's fill in the rest of the data
+            $this->setTotal($response->total);
+            $this->setStatus(OrderStatus::getValue($response->status));
+            $this->setProductCount($response->product_count);
+            $this->setLink($response->link["href"]);
+            $this->setCreationDate(new \DateTime($response->created_at));
+            return true;
+        } else {
+            // It failed, let's return the error
+            return $response[0];
+        }
     }
 
     /**
@@ -406,5 +434,46 @@ class Order
     public function getItems()
     {
 
+    }
+
+    public function toXML($sendEmailFlag = true)
+    {
+        $orderXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<order></order>');
+        $orderXML->addChild("id", $this->OrderID);
+        $orderXML->addChild("vendor_id", $this->VendorID);
+        $orderXML->addChild("first_name", $this->FirstName);
+        $orderXML->addChild("last_name", $this->LastName);
+        $orderXML->addChild("email", $this->EmailAddress);
+        $orderXML->addChild("currency", Currency::getName($this->Currency));
+        $c1 = $orderXML->addChild("custom_1", $this->Custom1);
+        if (empty($this->Custom1)) {
+            $c1->addAttribute("nil", "true");
+        }
+        $c2 = $orderXML->addChild("custom_2", $this->Custom2);
+        if (empty($this->Custom2)) {
+            $c2->addAttribute("nil", "true");
+        }
+        $c3 = $orderXML->addChild("custom_3", $this->Custom3);
+        if (empty($this->Custom3)) {
+            $c3->addAttribute("nil", "true");
+        }
+        $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(\DateTime::ISO8601));
+        $expirationDateElement->addAttribute("type", "datetime");
+        $downloadLimitElement = $orderXML->addChild("download_limit", $this->DownloadLimit);
+        $downloadLimitElement->addAttribute("type", "integer");
+        $orderXML->addChild("send_email", ($sendEmailFlag ? "true" : "false"));
+        $orderItemsElement = $orderXML->addChild("order_items");
+        $orderItemsElement->addAttribute("type", "array");
+        foreach ($this->items as $item) {
+            $orderItem = $orderItemsElement->addChild("order_item");
+            $orderItem->addChild("sku", $item->getSKU());
+            $downloadsRemainingElement = $orderItem->addChild("downloads_remaining", $item->getDownloadsRemaining());
+            $downloadsRemainingElement->addAttribute("type", "integer");
+            $priceElement = $orderItem->addChild("price", $item->getPrice());
+            $priceElement->addAttribute("type", "float");
+        }
+
+
+        return $orderXML->asXML();
     }
 }
