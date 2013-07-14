@@ -65,7 +65,7 @@ class FetchApp
      */
     public function getAccountDetails()
     {
-        $this->verifyReadiness();
+        APIWrapper::verifyReadiness();
         $detail = new AccountDetail();
         $results = APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/account", "GET");
         if (is_a($results, "SimpleXMLElement")) {
@@ -96,7 +96,7 @@ class FetchApp
      */
     public function getOrders($status = OrderStatus::All, $itemsPerPage = -1, $pageNumber = -1)
     {
-        $this->verifyReadiness();
+        APIWrapper::verifyReadiness();
         $orders = array();
         $requestURL = "https://app.fetchapp.com/api/v2/orders.xml?";
         if ($status != OrderStatus::All) {
@@ -157,7 +157,7 @@ class FetchApp
      */
     public function getOrder($orderID)
     {
-        $this->verifyReadiness();
+        APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $orderID;
         $results = APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
@@ -200,6 +200,7 @@ class FetchApp
      */
     public function getDownloads()
     {
+        APIWrapper::verifyReadiness();
         $downloads = array();
 
         return $downloads;
@@ -210,20 +211,11 @@ class FetchApp
      */
     public function getNewToken()
     {
+        APIWrapper::verifyReadiness();
         $success = false;
         $result = APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/new_token", "GET");
         $this->setAuthenticationToken($result[0]);
         $success = true;
         return $success;
     }
-
-    /**
-     * @throws \Exception
-     */
-    private function verifyReadiness()
-    {
-        APIWrapper::verifyReadiness();
-    }
-
-
 }
