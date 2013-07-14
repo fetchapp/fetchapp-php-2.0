@@ -407,6 +407,13 @@ class Order
         APIWrapper::makeRequest($requestURL, "GET");
     }
 
+    public function delete()
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/delete";
+        APIWrapper::makeRequest($requestURL, "DELETE");
+    }
+
     public function sendDownloadEmail()
     {
         //TODO: Implement.
