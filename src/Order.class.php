@@ -394,7 +394,7 @@ class Order
      */
     public function resetExpiration($resetExpiration = false, \DateTime $expirationDate = null, $downloadLimit = -1)
     {
-
+        //TODO: Implement.
     }
 
     /**
@@ -409,7 +409,7 @@ class Order
 
     public function sendDownloadEmail()
     {
-
+        //TODO: Implement.
     }
 
     /**
@@ -417,7 +417,7 @@ class Order
      */
     public function getDownloads()
     {
-
+        //TODO: Implement.
     }
 
     /**
@@ -425,7 +425,7 @@ class Order
      */
     public function getStatistics()
     {
-
+        //TODO: Implement.
     }
 
     /**
@@ -433,7 +433,39 @@ class Order
      */
     public function getItems()
     {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/order_items";
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $items = array();
+        foreach ($results->order_item as $item) {
+            $i = new OrderItem();
+            $i->setItemID((string)$item->id);
+            $i->setSKU((string)$item->sku);
+            $i->setOrderID((string)$item->order_id);
+            $i->setProductName((string)$item->product_name);
+            $i->setPrice((float)$item->price);
+            $i->setDownloadCount((int)$item->download_count);
+            if (!isset($item->custom_1['nil'])) {
+                $i->setCustom1($item->custom_1);
+            } else {
+                $i->setCustom1(null);
+            }
+            if (!isset($item->custom_2['nil'])) {
+                $i->setCustom2($item->custom_2);
+            } else {
+                $i->setCustom2(null);
+            }
+            if (!isset($item->custom_3['nil'])) {
+                $i->setCustom3($item->custom_3);
+            } else {
+                $i->setCustom3(null);
+            }
+            $i->setCreationDate(new \DateTime($item->created_at));
+//            $i->setDownloadsRemaining(0); // We don't seem to be getting this back.
 
+            $items[] = $i;
+        }
+        return $items;
     }
 
     public function toXML($sendEmailFlag = true)
