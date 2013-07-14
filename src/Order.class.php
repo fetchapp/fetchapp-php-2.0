@@ -417,7 +417,24 @@ class Order
      */
     public function getDownloads()
     {
-        //TODO: Implement.
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/downloads";
+        $downloads = array();
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        foreach ($results->download as $d) {
+            $download = new OrderDownload();
+            $download->setDownloadID((string)$d->id);
+            $download->setFileName((string)$d->filename);
+            $download->setSKU((string)$d->product_sku);
+            $download->setOrderID((string)$d->order_id);
+            $download->setOrderItemID((string)$d->order_item_id);
+            $download->setIPAddress((string)$d->ip_address);
+            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
+            $download->setSizeInBytes((int)$d->size_bytes);
+
+            $downloads[] = $download;
+        }
+        return $downloads;
     }
 
     /**

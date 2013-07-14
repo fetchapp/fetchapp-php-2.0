@@ -33,6 +33,11 @@ class OrderDownload
     private $OrderID;
 
     /**
+     * @var $OrderItemID String
+     */
+    private $OrderItemID;
+
+    /**
      * @var $IPAddress String
      */
     private $IPAddress;
@@ -131,6 +136,23 @@ class OrderDownload
     {
         return $this->OrderID;
     }
+
+    /**
+     * @param String $OrderItemID
+     */
+    public function setOrderItemID($OrderItemID)
+    {
+        $this->OrderItemID = $OrderItemID;
+    }
+
+    /**
+     * @return String
+     */
+    public function getOrderItemID()
+    {
+        return $this->OrderItemID;
+    }
+
 
     /**
      * @param String $SKU
