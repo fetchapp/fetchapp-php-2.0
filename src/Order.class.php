@@ -373,7 +373,7 @@ class Order
         APIWrapper::verifyReadiness();
         $this->items = $items;
         $url = "https://app.fetchapp.com/api/v2/orders/create";
-        $data = $this->toXML();
+        $data = $this->toXML($sendEmail);
         $response = APIWrapper::makeRequest($url, "POST", $data);
         if (isset($response->id)) {
             // It worked, let's fill in the rest of the data
@@ -442,7 +442,17 @@ class Order
      */
     public function getStatistics()
     {
-        //TODO: Implement.
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/stats";
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $stats = new OrderStatistic();
+        $stats->setOrderID((string)$results->id);
+        $stats->setVendorID((string)$results->vendor_id);
+        $stats->setDownloadCount((int)$results->download_count);
+        $stats->setProductCount((int)$results->product_count);
+        $stats->setOrderTotal((float)$results->total);
+        $stats->setCurrency(Currency::getValue((string)$results->currency));
+        return $stats;
     }
 
     /**
