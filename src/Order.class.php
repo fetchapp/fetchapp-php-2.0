@@ -414,9 +414,23 @@ class Order
         APIWrapper::makeRequest($requestURL, "DELETE");
     }
 
-    public function sendDownloadEmail()
+    public function sendDownloadEmail($resetExpiration = true, \DateTime $expirationDate = null, $downloadLimit = -1)
     {
-        //TODO: Implement.
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/send_email?";
+        if ($resetExpiration === false) {
+            $requestURL .= "reset_expiration=false";
+        } else {
+            if ($expirationDate != null) {
+                $requestURL .= "expiration_date=" . $expirationDate->format(\DateTime::ISO8601);
+            }
+            if ($downloadLimit != -1) {
+                $requestURL .= ($expirationDate != null) ? "&" : "";
+                $requestURL .= "download_limit=" . $downloadLimit;
+            }
+        }
+        $requestURL = rtrim($requestURL, '?');
+        APIWrapper::makeRequest($requestURL, "POST");
     }
 
     /**
