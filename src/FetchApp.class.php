@@ -194,16 +194,163 @@ class FetchApp
         }
         return $tempOrder;
     }
-
+    
     /**
-     * @return OrderDownload[]
+     * @param $itemsPerPage
+     * @param $pageNumber
+     * @return Product[]
      */
-    public function getDownloads()
+    public function getProducts($itemsPerPage = -1, $pageNumber = -1)
+    {
+        APIWrapper::verifyReadiness();
+        $products = array();
+        $requestURL = "https://app.fetchapp.com/api/v2/products.xml?";
+
+        if ($itemsPerPage != -1) {
+            $requestURL .= "per_page=" . $itemsPerPage;
+        }
+        
+        if ($pageNumber != -1) {
+            $requestURL .= ($itemsPerPage != -1) ? "&" : "";
+            $requestURL .= "page=" . $pageNumber;
+        }
+        
+        $requestURL = rtrim($requestURL, '?');
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            foreach ($results->product as $product) {
+                $tempProduct = new Product();
+                $tempProduct->setProductID($product->id);
+                $tempProduct->setSKU($product->sku);
+                $tempProduct->setName($product->name);
+                $tempProduct->setPrice($product->price);
+                $tempProduct->setCurrency(Currency::getValue($product->currency));
+                $tempProduct->setOrderCount($product->order_count);
+                $tempProduct->setDownloadCount($product->download_count);
+                $tempProduct->setPaypalAddToCartLink($product->paypal_add_to_cart_link['href']);
+                $tempProduct->setPaypalBuyNowLink($product->paypal_buy_now_link['href']);
+                $tempProduct->setPaypalViewCartLink($product->paypal_view_cart_link['href']);
+                $tempProduct->setCreationDate(new \DateTime($product->created_at));
+                $tempProduct->setFilesUri($product->files_uri);
+                $tempProduct->setDownloadsUri($product->downloads_uri);
+
+                $products[] = $tempProduct;
+            }
+
+        }
+        return $products;
+    }
+    
+    /**
+     * @param $productID
+     * @return Product
+     */
+    public function getProduct($productID)
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $productID;
+        $product = APIWrapper::makeRequest($requestURL, "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            $tempProduct = new Product();
+			$tempProduct->setProductID($product->id);
+			$tempProduct->setSKU($product->sku);
+			$tempProduct->setName($product->name);
+			$tempProduct->setPrice($product->price);
+			$tempProduct->setCurrency(Currency::getValue($product->currency));
+			$tempProduct->setOrderCount($product->order_count);
+			$tempProduct->setDownloadCount($product->download_count);
+			$tempProduct->setPaypalAddToCartLink($product->paypal_add_to_cart_link['href']);
+			$tempProduct->setPaypalBuyNowLink($product->paypal_buy_now_link['href']);
+			$tempProduct->setPaypalViewCartLink($product->paypal_view_cart_link['href']);
+			$tempProduct->setCreationDate(new \DateTime($product->created_at));
+			$tempProduct->setFilesUri($product->files_uri);
+			$tempProduct->setDownloadsUri($product->downloads_uri);
+        }
+        return $tempProduct;
+    }
+	
+    /**
+	 * @param $itemsPerPage
+     * @param $pageNumber
+     * @return OrderDownload[]
+     */     
+    public function getDownloads($itemsPerPage = -1, $pageNumber = -1)
     {
         APIWrapper::verifyReadiness();
         $downloads = array();
+        
+        $requestURL = "https://app.fetchapp.com/api/v2/downloads.xml?";
 
-        return $downloads;
+        if ($itemsPerPage != -1) {
+            $requestURL .= "per_page=" . $itemsPerPage;
+        }
+        
+        if ($pageNumber != -1) {
+            $requestURL .= ($itemsPerPage != -1) ? "&" : "";
+            $requestURL .= "page=" . $pageNumber;
+        }
+        
+        $requestURL = rtrim($requestURL, '?');
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            foreach ($results->download as $download) {
+                $tempDownload = new OrderDownload();
+                
+                $tempDownload->setDownloadID($download->id);
+                $tempDownload->setFileName($download->filename);
+                $tempDownload->setSKU($download->product_sku);
+                $tempDownload->setOrderID($download->order_id);
+                $tempDownload->setIPAddress($download->ip_address);
+			   	$tempDownload->setDownloadedOn(new \DateTime($download->downloaded_at));
+				$tempDownload->setSizeInBytes($download->size_bytes);
+
+                $downloads[] = $tempDownload;
+            }
+
+        }
+        return $downloads; 
+    }
+    
+    /**
+	 * @param $itemsPerPage
+     * @param $pageNumber
+     * @return FileDetail[]
+     */     
+    public function getFiles($itemsPerPage = -1, $pageNumber = -1)
+    {
+        APIWrapper::verifyReadiness();
+        $files = array();
+        
+        $requestURL = "https://app.fetchapp.com/api/v2/files.xml?";
+
+        if ($itemsPerPage != -1) {
+            $requestURL .= "per_page=" . $itemsPerPage;
+        }
+        
+        if ($pageNumber != -1) {
+            $requestURL .= ($itemsPerPage != -1) ? "&" : "";
+            $requestURL .= "page=" . $pageNumber;
+        }
+        
+        $requestURL = rtrim($requestURL, '?');
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        if (is_a($results, "SimpleXMLElement")) {
+            foreach ($results->file as $file) {
+                $tempFile = new FileDetail();
+                
+                $tempFile->setFileID($file->id);
+                $tempFile->setFileName($file->filename);
+                $tempFile->setSizeInBytes($file->size_bytes);
+                $tempFile->setContentType($file->content_type);
+                $tempFile->setPermalink($file->permalink);
+                $tempFile->setUrl($file->url);
+                $tempFile->setType($file->type);
+
+                $files[] = $tempFile;
+            }
+
+        }
+        return $files; 
     }
 
     /**

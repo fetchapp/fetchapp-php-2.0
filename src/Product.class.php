@@ -71,7 +71,7 @@ class Product
     public function getPaypalViewCartLink(){ return $this->PaypalViewCartLink; }
     public function setPaypalViewCartLink($PaypalViewCartLink){ $this->PaypalViewCartLink = $PaypalViewCartLink; }
 
-    public function getFilesUri()){ return $this->FilesUri; }
+    public function getFilesUri(){ return $this->FilesUri; }
     public function setFilesUri($FilesUri){ $this->FilesUri = $FilesUri; }
 
     public function getDownloadsUri(){ return $this->DownloadsUri; }
@@ -95,8 +95,23 @@ class Product
     }
 
     /**
-     * @param array $items
-     * @param bool $sendEmail
+     * @param int $Currency
+     */
+    public function setCurrency($Currency)
+    {
+        $this->Currency = $Currency;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrency()
+    {
+        return $this->Currency;
+    }
+
+    /**
+     * @param array $files
      * @return bool
      */
     public function create(array $files)
@@ -106,15 +121,58 @@ class Product
 
         $url = "https://app.fetchapp.com/api/v2/products/create";
         $data = $this->toXML();
+
         $response = APIWrapper::makeRequest($url, "POST", $data);
         if (isset($response->id)) {
-            var_dump($response);
-            // It worked, let's fill in the rest of the data
-			// $this->setTotal($response->total);
-			//  $this->setStatus(OrderStatus::getValue($response->status));
-			//  $this->setProductCount($response->product_count);
-			//   $this->setLink($response->link["href"]);
-			//  $this->setCreationDate(new \DateTime($response->created_at));
+
+            $this->setProductID($response->id);
+            $this->setSKU($response->sku);
+            $this->setName($response->name);
+            $this->setPrice($response->price);
+            $this->setOrderCount($response->order_count);
+            $this->setDownloadCount($response->download_count);
+            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
+            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
+            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
+            $this->setCreationDate(new \DateTime($product->created_at));
+            $this->setFilesUri($product->files_uri);
+            $this->setDownloadsUri($product->downloads_uri);
+            return true;
+        } else {
+            // It failed, let's return the error
+            return $response[0];
+        }
+    }
+
+    /**
+     * @param array $files
+     * @return bool
+     */
+    public function update(array $files)
+    {
+        APIWrapper::verifyReadiness();
+        $this->files = $files;
+
+        $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
+        $data = $this->toXML();
+
+        var_dump($data);
+
+        $response = APIWrapper::makeRequest($url, "PUT", $data);
+        if (isset($response->id)) {
+
+            $this->setProductID($response->id);
+            $this->setSKU($response->sku);
+            $this->setName($response->name);
+            $this->setPrice($response->price);
+            $this->setOrderCount($response->order_count);
+            $this->setDownloadCount($response->download_count);
+            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
+            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
+            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
+            $this->setCreationDate(new \DateTime($product->created_at));
+            $this->setFilesUri($product->files_uri);
+            $this->setDownloadsUri($product->downloads_uri);
             return true;
         } else {
             // It failed, let's return the error
@@ -173,17 +231,36 @@ class Product
         return $stats;
     }
 
-   /* ToDo: getFiles */
+    /**
+     * @return FileDetail[] $downloads
+     */
+    public function getFiles()
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/files";
+        $files = array();
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        foreach ($results->file as $file) {
+            $tempFile = new FileDetail();
+
+            $tempFile->setFileID($file->id);
+            $tempFile->setFileName($file->filename);
+            $tempFile->setSizeInBytes($file->size_bytes);
+            $tempFile->setContentType($file->content_type);
+            $tempFile->setPermalink($file->permalink);
+            $tempFile->setURL($file->url);
+
+            $files[] = $tempFile;
+        }
+        return $files;
+    }
 
 
 
-
-    private $FilesUri;
-    private $DownloadsUri;
 
     public function toXML($sendEmailFlag = true)
     {
-        $productXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<order></order>');
+        $productXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<product></product>');
         $productXML->addChild("id", $this->ProductID);
         $productXML->addChild("sku", $this->SKU);
         $productXML->addChild("name", $this->Name);
@@ -192,6 +269,7 @@ class Product
         $productXML->addChild("currency", Currency::getName($this->Currency));
 
         /* Confirm these elements are accepted; not in API spec */
+        /* ToDo: Add these as HREF */
         $productXML->addChild("paypal_add_to_cart_link", $this->PaypalAddToCartLink);
         $productXML->addChild("paypal_buy_now_link", $this->PaypalBuyNowLink);
         $productXML->addChild("paypal_view_cart_link", $this->PaypalViewCartLink);
@@ -206,9 +284,9 @@ class Product
         $filesElement = $productXML->addChild("files");
         $filesElement->addAttribute("type", "array");
         foreach ($this->files as $file) {
-            $file = $filesElement->addChild("file");
+            $fileElm = $filesElement->addChild("file");
             // Check This
-            $file->addChild("id", $file->getFileID() );
+            $fileElm->addChild("id", $file->getFileID() );
         }
 
         return $productXML->asXML();
