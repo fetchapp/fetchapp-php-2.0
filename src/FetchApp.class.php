@@ -250,7 +250,7 @@ class FetchApp
         APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $productID;
         $product = APIWrapper::makeRequest($requestURL, "GET");
-        if (is_a($results, "SimpleXMLElement")) {
+        if (is_a($product, "SimpleXMLElement")) {
             $tempProduct = new Product();
 			$tempProduct->setProductID($product->id);
 			$tempProduct->setSKU($product->sku);
