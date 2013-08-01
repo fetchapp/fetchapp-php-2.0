@@ -246,6 +246,66 @@ class OrderItem
     {
         return $this->SKU;
     }
+    
+    
+    /**
+     * @return OrderDownload[] $downloads
+     */
+    public function getDownloads()
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/order_items/" . $this->ItemID . "/downloads";
+        $downloads = array();
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        foreach ($results->download as $d) {
+            $download = new OrderDownload();
+            $download->setDownloadID((string)$d->id);
+            $download->setFileName((string)$d->filename);
+            $download->setSKU((string)$d->product_sku);
+            $download->setOrderID((string)$d->order_id);
+            $download->setOrderItemID((string)$d->order_item_id);
+            $download->setIPAddress((string)$d->ip_address);
+            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
+            $download->setSizeInBytes((int)$d->size_bytes);
+
+            $downloads[] = $download;
+        }
+        return $downloads;
+    }
+
+    /**
+     * @return FileDetail[] $downloads
+     */
+    public function getFiles()
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/order_items/" . $this->ItemID . "/files";
+        $files = array();
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+        foreach ($results->file as $file) {
+            $tempFile = new FileDetail();
+
+            $tempFile->setFileID($file->id);
+            $tempFile->setFileName($file->filename);
+            $tempFile->setSizeInBytes($file->size_bytes);
+            $tempFile->setContentType($file->content_type);
+            $tempFile->setPermalink($file->permalink);
+            $tempFile->setURL($file->url);
+
+            $files[] = $tempFile;
+        }
+        return $files;
+    }
+    
+    /**
+     *
+     */
+    public function expire()
+    {
+        APIWrapper::verifyReadiness();
+        $requestURL = "https://app.fetchapp.com/api/v2/order_items/" . $this->ItemID . "/expire";
+        APIWrapper::makeRequest($requestURL, "GET");
+    }
 
 
 }
