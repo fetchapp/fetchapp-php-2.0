@@ -123,6 +123,7 @@ class Product
         $data = $this->toXML();
 
         $response = APIWrapper::makeRequest($url, "POST", $data);
+
         if (isset($response->id)) {
 
             $this->setProductID($response->id);
@@ -155,8 +156,6 @@ class Product
 
         $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
         $data = $this->toXML();
-
-        var_dump($data);
 
         $response = APIWrapper::makeRequest($url, "PUT", $data);
         if (isset($response->id)) {
@@ -276,10 +275,11 @@ class Product
 
         $productXML->addChild("files_uri", $this->FilesUri);
         $productXML->addChild("downloads_uri", $this->DownloadsUri);
-        
-        $creationDateElement = $productXML->addChild("created_at", $this->CreationDate->format(\DateTime::ISO8601));
-        $creationDateElement->addAttribute("type", "datetime");
 
+        if(is_a($this->CreationDate, "DateTime")) {
+            $creationDateElement = $productXML->addChild("created_at", $this->CreationDate->format(\DateTime::ISO8601));
+            $creationDateElement->addAttribute("type", "datetime");
+        }
 
         $filesElement = $productXML->addChild("files");
         $filesElement->addAttribute("type", "array");

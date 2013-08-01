@@ -390,12 +390,40 @@ class Order
     }
 
     /**
-     *
+     * @param array $items
+     * @param bool $sendEmail
+     * @return bool
      */
+    public function update(array $items, $sendEmail = true)
+    {
+        APIWrapper::verifyReadiness();
+        $this->items = $items;
+        $url = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/update";
+        $data = $this->toXML($sendEmail);
+        $response = APIWrapper::makeRequest($url, "PUT", $data);
+        if (isset($response->id)) {
+            // It worked, let's fill in the rest of the data
+            $this->setTotal($response->total);
+            $this->setStatus(OrderStatus::getValue($response->status));
+            $this->setProductCount($response->product_count);
+            $this->setLink($response->link["href"]);
+            $this->setCreationDate(new \DateTime($response->created_at));
+            return true;
+        } else {
+            // It failed, let's return the error
+            return $response[0];
+        }
+    }
+
+    /**
+     * 
+     */
+    /*
     public function resetExpiration($resetExpiration = false, \DateTime $expirationDate = null, $downloadLimit = -1)
     {
-        //TODO: Implement.
-    }
+        // PRC: I don't believe this function is necessary; the same 
+        // functionality can be achieved from the $resetExpiration parameter in sendDownloadEmail 
+    }*/
 
     /**
      *
@@ -537,8 +565,10 @@ class Order
         if (empty($this->Custom3)) {
             $c3->addAttribute("nil", "true");
         }
-        $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(\DateTime::ISO8601));
-        $expirationDateElement->addAttribute("type", "datetime");
+        if(is_a($this->ExpirationDate, "DateTime")) {
+            $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(\DateTime::ISO8601));
+            $expirationDateElement->addAttribute("type", "datetime");
+        }
         $downloadLimitElement = $orderXML->addChild("download_limit", $this->DownloadLimit);
         $downloadLimitElement->addAttribute("type", "integer");
         $orderXML->addChild("send_email", ($sendEmailFlag ? "true" : "false"));

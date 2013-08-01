@@ -22,36 +22,36 @@ $fetch->setAuthenticationKey($fetch_key);
 $fetch->setAuthenticationToken($fetch_token);
 try{
 // Let's grab our Account data to make sure that everything is working!
+	$orders = $fetch->getOrders();
 	$products = $fetch->getProducts();
-	foreach($products as $product):
-		//var_dump($product);
-		$downloads = $product->getDownloads();
-		//var_dump($downloads);
-		
-		$files = $product->getFiles();
-		
-		//var_dump($files);
-		
-		$stats = $product->getStatistics();
+	
+	$test_order_item = new FetchApp\API\ORderItem();
+	$test_order_item->setSKU('test123');
+//	$test_order_item->setDownloadsRemianing('test123');
+	
+
+	foreach($orders as $order):
+		$downloads = $order->getDownloads();
+				
+		$stats = $order->getStatistics();
 		
 		//var_dump($stats);
 		
-	//	$product->setSKU('test1234566'.rand(0,5) );
+	//	$order->setSKU('test1234566'.rand(0,5) );
 		//var_dump($product->create($files) );
 		echo "\n\nUprdate\n\n";
 
-		$product->setPrice(2 );
+		$order->setFirstName('Joe' );
 
-		var_dump($product->create() );
+		var_dump($order->update(array($test_order_item) ) );
 
 	endforeach;
-	$files = $fetch->getFiles();
 
-	$product = new FetchApp\API\Product();
-	$product->setSKU('test123');
-	$product->setPrice(3);
-	$product->setName('testing');
-	var_dump($product->create($files) );
+	$order = new FetchApp\API\Order();
+	$order->setFirstName('Patrick');
+	$order->setLastName('Conant');
+	$order->setEmailAddress('conantp@gmail.com');
+	var_dump($order->create(array($test_order_item) ) );
 	echo "here";
 }
 catch (Exception $e){
