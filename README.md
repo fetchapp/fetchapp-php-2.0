@@ -253,7 +253,7 @@ catch (Exception $e){
 }
 ```
 
-### Get an Downloads for an Order
+### Get Downloads for an Order
 ```php
 use FetchApp\API\Currency;
 use FetchApp\API\FetchApp;
@@ -505,7 +505,7 @@ catch (Exception $e){
 }
 ```
 
-### Get an Downloads for an Product
+### Get Downloads for an Product
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
@@ -579,7 +579,7 @@ catch (Exception $e){
 }
 ```
 
-### Get an Downloads for an OrderItem
+### Get Downloads for an OrderItem
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\OrderItem;
