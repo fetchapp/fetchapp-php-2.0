@@ -617,7 +617,7 @@ $fetch = new FetchApp();
 $fetch->setAuthenticationKey("demokey");
 $fetch->setAuthenticationToken("demotoken");;
 try{
-    // Let's grab our Orders!
+    // Let's grab our Downloads!
     $downloads = $fetch->getDownloads(); // Grabs all downloads
                     // or
     $downloads = $fetch->getDownloads(50, 4); // Grabs downloads, 50 per page, page 4.
@@ -640,7 +640,7 @@ $fetch = new FetchApp();
 $fetch->setAuthenticationKey("demokey");
 $fetch->setAuthenticationToken("demotoken");;
 try{
-    // Let's grab our Orders!
+    // Let's grab our Files!
     $files = $fetch->getFiles(); // Grabs all files
                     // or
     $files = $fetch->getFiles(50, 4); // Grabs files, 50 per page, page 4.
