@@ -59,7 +59,7 @@ class Currency extends EnumEmulator
 	/**
      * @return mixed
      */
-    public static function getName($const, $className=Currency::$className)
+    public static function getName($const, $className='Currency')
     {
         return parent::getName($const, Currency::$className);
     }
