@@ -252,9 +252,9 @@ class Product
             $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
             $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
             $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($product->created_at));
-            $this->setFilesUri($product->files_uri);
-            $this->setDownloadsUri($product->downloads_uri);
+            $this->setCreationDate(new \DateTime($response->created_at));
+            $this->setFilesUri($response->files_uri);
+            $this->setDownloadsUri($response->downloads_uri);
             return true;
         } else {
             // It failed, let's return the error
@@ -285,9 +285,9 @@ class Product
             $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
             $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
             $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($product->created_at));
-            $this->setFilesUri($product->files_uri);
-            $this->setDownloadsUri($product->downloads_uri);
+            $this->setCreationDate(new \DateTime($response->created_at));
+            $this->setFilesUri($response->files_uri);
+            $this->setDownloadsUri($response->downloads_uri);
             return true;
         } else {
             // It failed, let's return the error
