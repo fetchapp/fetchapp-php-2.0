@@ -36,6 +36,12 @@ class Product
    	private $Price;
    	
    	/**
+     * @var $Currency \FetchApp\API\Currency
+     */
+   	private $Currency;
+   	
+   	
+   	/**
      * @var $OrderCount int
      */
    	private $OrderCount;
