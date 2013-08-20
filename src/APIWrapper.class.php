@@ -78,7 +78,12 @@ class APIWrapper
         }
         curl_close($ch);
         var_dump($ch_data);
-        return simplexml_load_string($ch_data);
+        
+        if(trim($ch_data) ):
+        	return simplexml_load_string($ch_data);
+        else:
+        	return false;
+        endif;
     }
 	
     /**
