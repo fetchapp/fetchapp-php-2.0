@@ -77,6 +77,7 @@ class APIWrapper
             throw new \Exception(curl_error($ch));
         }
         curl_close($ch);
+        var_dump($ch_data);
         return simplexml_load_string($ch_data);
     }
 	
