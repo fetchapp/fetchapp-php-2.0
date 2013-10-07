@@ -10,7 +10,6 @@
  */
  
 namespace FetchApp\API;
-include_once "EnumEmulator.class.php";
 
 class Currency extends EnumEmulator
 {
