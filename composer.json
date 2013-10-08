@@ -14,5 +14,10 @@
             "name": "Michael Larkin",
             "email": "mjlarkin@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-0": {
+            "FetchApp": "src/"
+        }
+    }
 }
