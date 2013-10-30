@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class OrderStatistic
+class FetchApp_OrderStatistic
 {
     /**
      * @var $OrderID String
@@ -40,24 +40,24 @@ class OrderStatistic
     private $OrderTotal;
 
     /**
-     * @var int Currency
+     * @var int FetchApp_Currency
      */
-    private $Currency;
+    private $FetchApp_Currency;
 
     /**
-     * @param int $Currency
+     * @param int $FetchApp_Currency
      */
-    public function setCurrency($Currency)
+    public function setFetchApp_Currency($FetchApp_Currency)
     {
-        $this->Currency = $Currency;
+        $this->FetchApp_Currency = $FetchApp_Currency;
     }
 
     /**
      * @return int
      */
-    public function getCurrency()
+    public function getFetchApp_Currency()
     {
-        return $this->Currency;
+        return $this->FetchApp_Currency;
     }
 
     /**

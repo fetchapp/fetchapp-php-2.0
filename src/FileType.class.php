@@ -9,23 +9,23 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
-include_once "EnumEmulator.class.php";
+//namespace FetchApp\API;
+include_once "FetchApp_EnumEmulator.class.php";
 
 
-class FileType extends EnumEmulator
+class FetchApp_FileType extends FetchApp_EnumEmulator
 {
     const Download = 0;
     const Link = 1;
 
-    private static $className = "FetchApp\\API\\FileType";
+    private static $className = "FetchApp\\API\\FetchApp_FileType";
 	
 	/**
      * @return mixed
      */
     public static function getName($const)
     {
-        return parent::getName($const, FileType::$className);
+        return parent::getName($const, FetchApp_FileType::$className);
     }
 	
 	/**
@@ -33,7 +33,7 @@ class FileType extends EnumEmulator
      */
     public static function getOptions()
     {
-        return parent::getOptions(FileType::$className);
+        return parent::getOptions(FetchApp_FileType::$className);
     }
 	
 	/**
@@ -41,6 +41,6 @@ class FileType extends EnumEmulator
      */
     public static function getValue($name)
     {
-        return parent::getValue($name, FileType::$className);
+        return parent::getValue($name, FetchApp_FileType::$className);
     }
 }

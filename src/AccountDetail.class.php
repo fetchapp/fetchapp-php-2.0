@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class AccountDetail
+class FetchApp_AccountDetail
 {
     /**
      * @var $AccountID int
@@ -43,11 +43,11 @@ class AccountDetail
      */
     protected $ItemDownloadLimit;
     /**
-     * @var $Currency int
+     * @var $FetchApp_Currency int
      */
-    protected $Currency;
+    protected $FetchApp_Currency;
     /**
-     * @var $CreationDate \DateTime
+     * @var $CreationDate DateTime
      */
     protected $CreationDate;
     /**
@@ -64,7 +64,7 @@ class AccountDetail
      */
     public function __construct()
     {
-        $this->CreationDate = new \DateTime("1-1-1901");
+        $this->CreationDate = new DateTime("1-1-1901");
     }
 
     /**
@@ -148,7 +148,7 @@ class AccountDetail
     }
 
     /**
-     * @param \DateTime $CreationDate
+     * @param DateTime $CreationDate
      */
     public function setCreationDate($CreationDate)
     {
@@ -156,7 +156,7 @@ class AccountDetail
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreationDate()
     {
@@ -164,19 +164,19 @@ class AccountDetail
     }
 
     /**
-     * @param int $Currency
+     * @param int $FetchApp_Currency
      */
-    public function setCurrency($Currency)
+    public function setFetchApp_Currency($FetchApp_Currency)
     {
-        $this->Currency = $Currency;
+        $this->FetchApp_Currency = $FetchApp_Currency;
     }
 
     /**
      * @return int
      */
-    public function getCurrency()
+    public function getFetchApp_Currency()
     {
-        return $this->Currency;
+        return $this->FetchApp_Currency;
     }
 
     /**

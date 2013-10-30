@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class EnumEmulator
+class FetchApp_EnumEmulator
 {
 	
 	/**

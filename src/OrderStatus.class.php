@@ -9,13 +9,14 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class OrderStatus extends EnumEmulator
+class FetchApp_OrderStatus extends FetchApp_EnumEmulator
 {
 
-    private static $className = "FetchApp\\API\\OrderStatus";
+//    private static $className = "FetchApp\\API\\OrderStatus";
+    private static $className = "FetchApp_OrderStatus";
 
     const Open = 0;
     const Expired = 1;
@@ -24,7 +25,7 @@ class OrderStatus extends EnumEmulator
 	/**
      * @return mixed
      */
-    public static function getName($const, $className='OrderStatus')
+    public static function getName($const, $className='FetchApp_OrderStatus')
     {
         return parent::getName($const, OrderStatus::$className);
     }
@@ -32,7 +33,7 @@ class OrderStatus extends EnumEmulator
 	/**
      * @return array
      */
-    public static function getOptions($className='OrderStatus')
+    public static function getOptions($className='FetchApp_OrderStatus')
     {
         return parent::getOptions(OrderStatus::$className);
     }
@@ -40,7 +41,7 @@ class OrderStatus extends EnumEmulator
 	/**
      * @return mixed
      */
-    public static function getValue($name, $className='OrderStatus')
+    public static function getValue($name, $className='FetchApp_OrderStatus')
     {
         return parent::getValue($name, OrderStatus::$className);
     }

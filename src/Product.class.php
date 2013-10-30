@@ -9,7 +9,7 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
 class Product
@@ -36,9 +36,9 @@ class Product
    	private $Price;
    	
    	/**
-     * @var $Currency \FetchApp\API\Currency
+     * @var $FetchApp_Currency \FetchApp\API\FetchApp_Currency
      */
-   	private $Currency;
+   	private $FetchApp_Currency;
    	
    	
    	/**
@@ -67,7 +67,7 @@ class Product
    	private $PaypalViewCartLink;
 
 	/**
-     * @var $CreationDate \DateTime
+     * @var $CreationDate DateTime
      */
     private $CreationDate;
     
@@ -203,7 +203,7 @@ class Product
     public function setDownloadsUri($DownloadsUri){ $this->DownloadsUri = $DownloadsUri; }
 
     /**
-     * @param \DateTime $CreationDate
+     * @param DateTime $CreationDate
      */
     public function setCreationDate($CreationDate)
     {
@@ -211,7 +211,7 @@ class Product
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreationDate()
     {
@@ -219,19 +219,19 @@ class Product
     }
 
     /**
-     * @param int $Currency
+     * @param int $FetchApp_Currency
      */
-    public function setCurrency($Currency)
+    public function setFetchApp_Currency($FetchApp_Currency)
     {
-        $this->Currency = $Currency;
+        $this->FetchApp_Currency = $FetchApp_Currency;
     }
 
     /**
      * @return int
      */
-    public function getCurrency()
+    public function getFetchApp_Currency()
     {
-        return $this->Currency;
+        return $this->FetchApp_Currency;
     }
 
     /**
@@ -240,13 +240,13 @@ class Product
      */
     public function create(array $files)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $this->files = $files;
 
         $url = "https://app.fetchapp.com/api/v2/products/create";
         $data = $this->toXML();
 
-        $response = APIWrapper::makeRequest($url, "POST", $data);
+        $response = FetchApp_APIWrapper::makeRequest($url, "POST", $data);
 
         if (isset($response->id)) {
             $this->setProductID($response->id);
@@ -258,7 +258,7 @@ class Product
             $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
             $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
             $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
+            $this->setCreationDate(new DateTime($response->created_at));
             $this->setFilesUri($response->files_uri);
             $this->setDownloadsUri($response->downloads_uri);
             return true;
@@ -274,13 +274,13 @@ class Product
      */
     public function update(array $files)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $this->files = $files;
 
         $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
         $data = $this->toXML();
 
-        $response = APIWrapper::makeRequest($url, "PUT", $data);
+        $response = FetchApp_APIWrapper::makeRequest($url, "PUT", $data);
         if (isset($response->id)) {
             $this->setProductID($response->id);
             $this->setSKU($response->sku);
@@ -291,7 +291,7 @@ class Product
             $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
             $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
             $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
+            $this->setCreationDate(new DateTime($response->created_at));
             $this->setFilesUri($response->files_uri);
             $this->setDownloadsUri($response->downloads_uri);
             return true;
@@ -306,30 +306,30 @@ class Product
      */
     public function delete()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/delete";
-		$response = APIWrapper::makeRequest($requestURL, "DELETE");
+		$response = FetchApp_APIWrapper::makeRequest($requestURL, "DELETE");
 		return $response;
     }
 
     /**
-     * @return OrderDownload[] $downloads
+     * @return FetchApp_OrderDownload[] $downloads
      */
     public function getDownloads()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/downloads";
         $downloads = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         foreach ($results->download as $d) {
-            $download = new OrderDownload();
+            $download = new FetchApp_OrderDownload();
             $download->setDownloadID((string)$d->id);
             $download->setFileName((string)$d->filename);
             $download->setSKU((string)$d->product_sku);
             $download->setOrderID((string)$d->order_id);
-            $download->setOrderItemID((string)$d->order_item_id);
+            $download->setFetchApp_OrderItemID((string)$d->order_item_id);
             $download->setIPAddress((string)$d->ip_address);
-            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
+            $download->setDownloadedOn(new DateTime($d->downloaded_at));
             $download->setSizeInBytes((int)$d->size_bytes);
 
             $downloads[] = $download;
@@ -338,34 +338,34 @@ class Product
     }
 
     /**
-     * @return ProductStatistic[] $statistics
+     * @return FetchApp_ProductStatistic[] $statistics
      */
     public function getStatistics()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/stats";
-        $results = APIWrapper::makeRequest($requestURL, "GET");
-        $stats = new ProductStatistic();
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
+        $stats = new FetchApp_ProductStatistic();
         $stats->setProductID((string)$results->id);
         $stats->setSKU((string)$results->sku);
         $stats->setDownloadCount((int)$results->download_count);
         $stats->setOrderCount((int)$results->order_count);
         $stats->setPrice((float)$results->price);
-        $stats->setCurrency(Currency::getValue((string)$results->currency));
+        $stats->setFetchApp_Currency(FetchApp_Currency::getValue((string)$results->FetchApp_Currency));
         return $stats;
     }
 
     /**
-     * @return FileDetail[] $downloads
+     * @return FetchApp_FileDetail[] $downloads
      */
     public function getFiles()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/files";
         $files = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         foreach ($results->file as $file) {
-            $tempFile = new FileDetail();
+            $tempFile = new FetchApp_FileDetail();
 
             $tempFile->setFileID($file->id);
             $tempFile->setFileName($file->filename);
@@ -380,17 +380,17 @@ class Product
     }
 	
 	/**
-     * @return \SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function toXML($sendEmailFlag = true)
     {
-        $productXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<product></product>');
+        $productXML = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<product></product>');
         $productXML->addChild("id", $this->ProductID);
         $productXML->addChild("sku", $this->SKU);
         $productXML->addChild("name", $this->Name);
         $priceElement = $productXML->addChild("price", $this->Price);
         $priceElement->addAttribute("type", "float");
-        $productXML->addChild("currency", Currency::getName($this->Currency));
+        $productXML->addChild("FetchApp_Currency", FetchApp_Currency::getName($this->FetchApp_Currency));
 
         /* Confirm these elements are accepted; not in API spec */
         /* ToDo: Add these as HREF */
@@ -402,7 +402,7 @@ class Product
         $productXML->addChild("downloads_uri", $this->DownloadsUri);
 
         if(is_a($this->CreationDate, "DateTime")) {
-            $creationDateElement = $productXML->addChild("created_at", $this->CreationDate->format(\DateTime::ISO8601));
+            $creationDateElement = $productXML->addChild("created_at", $this->CreationDate->format(DateTime::ISO8601));
             $creationDateElement->addAttribute("type", "datetime");
         }
 

@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class APIWrapper
+class FetchApp_APIWrapper
 {
 	/**
      * @var $AuthenticationToken String
@@ -92,7 +92,7 @@ class APIWrapper
     public static function verifyReadiness()
     {
         if (empty(self::$AuthenticationKey) || empty(self::$AuthenticationToken)) {
-            throw new \Exception("You must configure an Authentication Key and an Authentication Token before you can connect to FetchApp.");
+            throw new Exception("You must configure an Authentication Key and an Authentication Token before you can connect to FetchApp.");
         }
     }
 }

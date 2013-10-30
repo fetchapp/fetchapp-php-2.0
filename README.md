@@ -18,7 +18,7 @@ $fetch->setAuthenticationKey("demokey");
 $fetch->setAuthenticationToken("demotoken");
 try{
 // Let's grab our Account data to make sure that everything is working!
-    $account = $fetch->getAccountDetails();//    That was easy!
+    $account = $fetch->getFetchApp_AccountDetails();//    That was easy!
 
 // Let's write some of the available Data to the page!
     echo $account->getAccountID();
@@ -51,11 +51,11 @@ try{
     // Let's grab our Orders!
     $orders = $fetch->getOrders(); // Grabs all orders (potentially HUGE!)
                     // or
-    $orders = $fetch->getOrders(OrderStatus::All, 50, 4); // Grabs orders of all types, 50 per page, page 4.
+    $orders = $fetch->getOrders(FetchApp_OrderStatus::All, 50, 4); // Grabs orders of all types, 50 per page, page 4.
                     // or
-    $orders = $fetch->getOrders(OrderStatus::Expired); // Grabs all expired orders.
+    $orders = $fetch->getOrders(FetchApp_OrderStatus::Expired); // Grabs all expired orders.
                     // or
-    $orders = $fetch->getOrders(OrderStatus::Open); // Grabs all open orders
+    $orders = $fetch->getOrders(FetchApp_OrderStatus::Open); // Grabs all open orders
 }
 catch (Exception $e){
     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
@@ -69,7 +69,7 @@ foreach ($orders as $order) {
     echo $order->getLastName().PHP_EOL;
     echo $order->getEmailAddress().PHP_EOL;
     echo $order->getTotal().PHP_EOL;
-    echo $order->getCurrency().PHP_EOL;
+    echo $order->getFetchApp_Currency().PHP_EOL;
     echo $order->getStatus().PHP_EOL;
     echo $order->getProductCount().PHP_EOL;
     echo $order->getDownloadCount().PHP_EOL;
@@ -112,7 +112,7 @@ echo $order->getFirstName().PHP_EOL;
 echo $order->getLastName().PHP_EOL;
 echo $order->getEmailAddress().PHP_EOL;
 echo $order->getTotal().PHP_EOL;
-echo $order->getCurrency().PHP_EOL;
+echo $order->getFetchApp_Currency().PHP_EOL;
 echo $order->getStatus().PHP_EOL;
 echo $order->getProductCount().PHP_EOL;
 echo $order->getDownloadCount().PHP_EOL;
@@ -130,10 +130,10 @@ echo $creationDate->format('F j, Y').PHP_EOL;
 
 ### Creating an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
+use FetchApp\API\FetchApp_OrderItem;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -149,7 +149,7 @@ try{
     $order->setLastName("Bond");
     $order->setEmailAddress("007@mi6.com");
     $order->setVendorID("M002");
-    $order->setCurrency(Currency::GBP);
+    $order->setFetchApp_Currency(FetchApp_Currency::GBP);
     $order->setCustom1("Herp");
     $order->setCustom3("Derp");
     $order->setExpirationDate(new DateTime("2015/12/24"));
@@ -167,10 +167,10 @@ catch (Exception $e){
 
 ### Updating an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
+use FetchApp\API\FetchApp_OrderItem;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -186,7 +186,7 @@ try{
     $order->setLastName("Bond");
     $order->setEmailAddress("007@mi6.com");
     $order->setVendorID("M002");
-    $order->setCurrency(Currency::GBP);
+    $order->setFetchApp_Currency(FetchApp_Currency::GBP);
     $order->setCustom1("Herp");
     $order->setCustom3("Derp");
     $order->setExpirationDate(new DateTime("2015/12/24"));
@@ -204,10 +204,10 @@ catch (Exception $e){
 
 ### Deleting an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
+use FetchApp\API\FetchApp_OrderItem;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -228,11 +228,11 @@ catch (Exception $e){
 
 ### Get statistics for an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
-use FetchApp\API\OrderStatistic;
+use FetchApp\API\FetchApp_OrderItem;
+use FetchApp\API\FetchApp_OrderStatistic;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -253,11 +253,11 @@ catch (Exception $e){
 
 ### Get Downloads for an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
-use FetchApp\API\OrderDownload;
+use FetchApp\API\FetchApp_OrderItem;
+use FetchApp\API\FetchApp_OrderDownload;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -278,10 +278,10 @@ catch (Exception $e){
 
 ### Expire an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
+use FetchApp\API\FetchApp_OrderItem;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -302,10 +302,10 @@ catch (Exception $e){
 
 ### Re-send a download email for an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
+use FetchApp\API\FetchApp_OrderItem;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -379,7 +379,7 @@ echo $product->getProductID().PHP_EOL;
 
 ### Creating an Product
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
 
@@ -395,7 +395,7 @@ try{
     $product->setSKU(123);
     $product->setName("Test Product");
     $product->setPrice(3.00);
-    $product->setCurrency(Currency::GBP);
+    $product->setFetchApp_Currency(FetchApp_Currency::GBP);
 
     $files = array();
     // Add files to the file array
@@ -410,7 +410,7 @@ catch (Exception $e){
 
 ### Updating an Product
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
 
@@ -426,7 +426,7 @@ try{
     $product->setSKU(123);
     $product->setName("Test Product");
     $product->setPrice(3.00);
-    $product->setCurrency(Currency::GBP);
+    $product->setFetchApp_Currency(FetchApp_Currency::GBP);
     $files = $product->getFiles(); // Get the existing product files
 
     $response = $product->update($files, false);
@@ -462,7 +462,7 @@ catch (Exception $e){
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
-use FetchApp\API\FileDetail;
+use FetchApp\API\FetchApp_FileDetail;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -484,7 +484,7 @@ catch (Exception $e){
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
-use FetchApp\API\ProductStatistic;
+use FetchApp\API\FetchApp_ProductStatistic;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -507,7 +507,7 @@ catch (Exception $e){
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
-use FetchApp\API\OrderDownload;
+use FetchApp\API\FetchApp_OrderDownload;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -526,13 +526,13 @@ catch (Exception $e){
 }
 ```
 
-## Getting OrderItem Information
-### Get all OrderItems for an Order
+## Getting FetchApp_OrderItem Information
+### Get all FetchApp_OrderItems for an Order
 ```php
-use FetchApp\API\Currency;
+use FetchApp\API\FetchApp_Currency;
 use FetchApp\API\FetchApp;
 use FetchApp\API\Order;
-use FetchApp\API\OrderItem;
+use FetchApp\API\FetchApp_OrderItem;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -551,11 +551,11 @@ catch (Exception $e){
 }
 ```
 
-### Get files for an OrderItem
+### Get files for an FetchApp_OrderItem
 ```php
 use FetchApp\API\FetchApp;
-use FetchApp\API\OrderItem;
-use FetchApp\API\FileDetail;
+use FetchApp\API\FetchApp_OrderItem;
+use FetchApp\API\FetchApp_FileDetail;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -567,8 +567,8 @@ $fetch->setAuthenticationToken("demotoken");
 try{
     $order = new FetchApp->getOrder(123);
     $items = $order->getItems(); // Get the existing order items
-    foreach($items as $orderitem):
-		$files = $orderitem->getFiles();
+    foreach($items as $FetchApp_OrderItem):
+		$files = $FetchApp_OrderItem->getFiles();
 	endforeach;
 }
 catch (Exception $e){
@@ -577,11 +577,11 @@ catch (Exception $e){
 }
 ```
 
-### Get Downloads for an OrderItem
+### Get Downloads for an FetchApp_OrderItem
 ```php
 use FetchApp\API\FetchApp;
-use FetchApp\API\OrderItem;
-use FetchApp\API\OrderDownload;
+use FetchApp\API\FetchApp_OrderItem;
+use FetchApp\API\FetchApp_OrderDownload;
 
 // Create a new FetchApp instance
 $fetch = new FetchApp();
@@ -593,8 +593,8 @@ $fetch->setAuthenticationToken("demotoken");
 try{
 	$order = new FetchApp->getOrder(123);
     $items = $order->getItems(); // Get the existing order items
-    foreach($items as $orderitem):
-	    $downloads = $orderitem->getDownloads();
+    foreach($items as $FetchApp_OrderItem):
+	    $downloads = $FetchApp_OrderItem->getDownloads();
 	endforeach;
 }
 catch (Exception $e){

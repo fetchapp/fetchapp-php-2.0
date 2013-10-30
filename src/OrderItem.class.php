@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class OrderItem
+class FetchApp_OrderItem
 {
     /**
      * @var $ItemID int
@@ -65,7 +65,7 @@ class OrderItem
     private $Custom3;
 
     /**
-     * @var $CreationDate \DateTime
+     * @var $CreationDate DateTime
      */
     private $CreationDate;
 
@@ -75,15 +75,15 @@ class OrderItem
     }
 
     /**
-     * @param \DateTime $CreationDate
+     * @param DateTime $CreationDate
      */
-    public function setCreationDate(\DateTime $CreationDate)
+    public function setCreationDate(DateTime $CreationDate)
     {
         $this->CreationDate = $CreationDate;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreationDate()
     {
@@ -252,23 +252,23 @@ class OrderItem
     
     
     /**
-     * @return OrderDownload[] $downloads
+     * @return FetchApp_OrderDownload[] $downloads
      */
     public function getDownloads()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/order_items/" . $this->ItemID . "/downloads";
         $downloads = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         foreach ($results->download as $d) {
-            $download = new OrderDownload();
+            $download = new FetchApp_OrderDownload();
             $download->setDownloadID((string)$d->id);
             $download->setFileName((string)$d->filename);
             $download->setSKU((string)$d->product_sku);
             $download->setOrderID((string)$d->order_id);
-            $download->setOrderItemID((string)$d->order_item_id);
+            $download->setFetchApp_OrderItemID((string)$d->order_item_id);
             $download->setIPAddress((string)$d->ip_address);
-            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
+            $download->setDownloadedOn(new DateTime($d->downloaded_at));
             $download->setSizeInBytes((int)$d->size_bytes);
 
             $downloads[] = $download;
@@ -277,16 +277,16 @@ class OrderItem
     }
 
     /**
-     * @return FileDetail[] $downloads
+     * @return FetchApp_FileDetail[] $downloads
      */
     public function getFiles()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/order_items/" . $this->ItemID . "/files";
         $files = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         foreach ($results->file as $file) {
-            $tempFile = new FileDetail();
+            $tempFile = new FetchApp_FileDetail();
 
             $tempFile->setFileID($file->id);
             $tempFile->setFileName($file->filename);
@@ -305,9 +305,9 @@ class OrderItem
      */
     public function expire()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/order_items/" . $this->ItemID . "/expire";
-        $response = APIWrapper::makeRequest($requestURL, "GET");
+        $response = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         return $response;
     }
 

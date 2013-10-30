@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class FileDetail {
+class FetchApp_FileDetail {
     /**
      * @var $FileID String
      */

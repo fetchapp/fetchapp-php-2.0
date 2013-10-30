@@ -9,7 +9,7 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
 class Order
@@ -40,9 +40,9 @@ class Order
      */
     private $Total;
     /**
-     * @var $Currency int
+     * @var $FetchApp_Currency int
      */
-    private $Currency;
+    private $FetchApp_Currency;
     /**
      * @var $Status int
      */
@@ -56,7 +56,7 @@ class Order
      */
     private $DownloadCount;
     /**
-     * @var $ExpirationDate \DateTime
+     * @var $ExpirationDate DateTime
      */
     private $ExpirationDate;
     /**
@@ -76,7 +76,7 @@ class Order
      */
     private $Custom3;
     /**
-     * @var $CreationDate \DateTime
+     * @var $CreationDate DateTime
      */
     private $CreationDate;
     /**
@@ -84,7 +84,7 @@ class Order
      */
     private $Link;
     /**
-     * @var $items OrderItem[]
+     * @var $items FetchApp_OrderItem[]
      */
     private $items;
 
@@ -94,7 +94,7 @@ class Order
     }
 
     /**
-     * @param \DateTime $CreationDate
+     * @param DateTime $CreationDate
      */
     public function setCreationDate($CreationDate)
     {
@@ -102,7 +102,7 @@ class Order
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreationDate()
     {
@@ -110,19 +110,19 @@ class Order
     }
 
     /**
-     * @param int $Currency
+     * @param int $FetchApp_Currency
      */
-    public function setCurrency($Currency)
+    public function setFetchApp_Currency($FetchApp_Currency)
     {
-        $this->Currency = $Currency;
+        $this->FetchApp_Currency = $FetchApp_Currency;
     }
 
     /**
      * @return int
      */
-    public function getCurrency()
+    public function getFetchApp_Currency()
     {
-        return $this->Currency;
+        return $this->FetchApp_Currency;
     }
 
     /**
@@ -222,7 +222,7 @@ class Order
     }
 
     /**
-     * @param \DateTime $ExpirationDate
+     * @param DateTime $ExpirationDate
      */
     public function setExpirationDate($ExpirationDate)
     {
@@ -230,7 +230,7 @@ class Order
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getExpirationDate()
     {
@@ -372,18 +372,18 @@ class Order
      */
     public function create(array $items, $sendEmail = true)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $this->items = $items;
         $url = "https://app.fetchapp.com/api/v2/orders/create";
         $data = $this->toXML($sendEmail);
-        $response = APIWrapper::makeRequest($url, "POST", $data);
+        $response = FetchApp_APIWrapper::makeRequest($url, "POST", $data);
         if (isset($response->id)) {
             // It worked, let's fill in the rest of the data
             $this->setTotal($response->total);
-            $this->setStatus(OrderStatus::getValue($response->status));
+            $this->setStatus(FetchApp_OrderStatus::getValue($response->status));
             $this->setProductCount($response->product_count);
             $this->setLink($response->link["href"]);
-            $this->setCreationDate(new \DateTime($response->created_at));
+            $this->setCreationDate(new DateTime($response->created_at));
             return true;
         } else {
             // It failed, let's return the error
@@ -398,18 +398,18 @@ class Order
      */
     public function update(array $items, $sendEmail = true)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $this->items = $items;
         $url = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/update";
         $data = $this->toXML($sendEmail);
-        $response = APIWrapper::makeRequest($url, "PUT", $data);
+        $response = FetchApp_APIWrapper::makeRequest($url, "PUT", $data);
         if (isset($response->id)) {
             // It worked, let's fill in the rest of the data
             $this->setTotal($response->total);
-            $this->setStatus(OrderStatus::getValue($response->status));
+            $this->setStatus(FetchApp_OrderStatus::getValue($response->status));
             $this->setProductCount($response->product_count);
             $this->setLink($response->link["href"]);
-            $this->setCreationDate(new \DateTime($response->created_at));
+            $this->setCreationDate(new DateTime($response->created_at));
             return true;
         } else {
             // It failed, let's return the error
@@ -422,9 +422,9 @@ class Order
      */
     public function expire()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/expire";
-        $response = APIWrapper::makeRequest($requestURL, "GET");
+        $response = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
 		return $response;
     }
 	
@@ -433,24 +433,24 @@ class Order
      */
     public function delete()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/delete";
-        $response = APIWrapper::makeRequest($requestURL, "DELETE");
+        $response = FetchApp_APIWrapper::makeRequest($requestURL, "DELETE");
 		return $response;
     }
 	
 	/**
      * @return mixed
      */
-    public function sendDownloadEmail($resetExpiration = true, \DateTime $expirationDate = null, $downloadLimit = -1)
+    public function sendDownloadEmail($resetExpiration = true, DateTime $expirationDate = null, $downloadLimit = -1)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/send_email?";
         if ($resetExpiration === false) {
             $requestURL .= "reset_expiration=false";
         } else {
             if ($expirationDate != null) {
-                $requestURL .= "expiration_date=" . $expirationDate->format(\DateTime::ISO8601);
+                $requestURL .= "expiration_date=" . $expirationDate->format(DateTime::ISO8601);
             }
             if ($downloadLimit != -1) {
                 $requestURL .= ($expirationDate != null) ? "&" : "";
@@ -458,28 +458,28 @@ class Order
             }
         }
         $requestURL = rtrim($requestURL, '?');
-        $response = APIWrapper::makeRequest($requestURL, "POST");
+        $response = FetchApp_APIWrapper::makeRequest($requestURL, "POST");
         return $response;
     }
 
     /**
-     * @return OrderDownload[] $downloads
+     * @return FetchApp_OrderDownload[] $downloads
      */
     public function getDownloads()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/downloads";
         $downloads = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         foreach ($results->download as $d) {
-            $download = new OrderDownload();
+            $download = new FetchApp_OrderDownload();
             $download->setDownloadID((string)$d->id);
             $download->setFileName((string)$d->filename);
             $download->setSKU((string)$d->product_sku);
             $download->setOrderID((string)$d->order_id);
-            $download->setOrderItemID((string)$d->order_item_id);
+            $download->setFetchApp_OrderItemID((string)$d->order_item_id);
             $download->setIPAddress((string)$d->ip_address);
-            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
+            $download->setDownloadedOn(new DateTime($d->downloaded_at));
             $download->setSizeInBytes((int)$d->size_bytes);
 
             $downloads[] = $download;
@@ -488,34 +488,34 @@ class Order
     }
 
     /**
-     * @return OrderStatistic[] $statistics
+     * @return FetchApp_OrderStatistic[] $statistics
      */
     public function getStatistics()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/stats";
-        $results = APIWrapper::makeRequest($requestURL, "GET");
-        $stats = new OrderStatistic();
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
+        $stats = new FetchApp_OrderStatistic();
         $stats->setOrderID((string)$results->id);
         $stats->setVendorID((string)$results->vendor_id);
         $stats->setDownloadCount((int)$results->download_count);
         $stats->setProductCount((int)$results->product_count);
         $stats->setOrderTotal((float)$results->total);
-        $stats->setCurrency(Currency::getValue((string)$results->currency));
+        $stats->setFetchApp_Currency(FetchApp_Currency::getValue((string)$results->FetchApp_Currency));
         return $stats;
     }
 
     /**
-     * @return OrderItem[] $items
+     * @return FetchApp_OrderItem[] $items
      */
     public function getItems()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/order_items";
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         $items = array();
         foreach ($results->order_item as $item) {
-            $i = new OrderItem();
+            $i = new FetchApp_OrderItem();
             $i->setItemID((string)$item->id);
             $i->setSKU((string)$item->sku);
             $i->setOrderID((string)$item->order_id);
@@ -537,7 +537,7 @@ class Order
             } else {
                 $i->setCustom3(null);
             }
-            $i->setCreationDate(new \DateTime($item->created_at));
+            $i->setCreationDate(new DateTime($item->created_at));
 			// $i->setDownloadsRemaining(0); // We don't seem to be getting this back.
 
             $items[] = $i;
@@ -556,7 +556,7 @@ class Order
         $orderXML->addChild("first_name", $this->FirstName);
         $orderXML->addChild("last_name", $this->LastName);
         $orderXML->addChild("email", $this->EmailAddress);
-        $orderXML->addChild("currency", Currency::getName($this->Currency));
+        $orderXML->addChild("FetchApp_Currency", FetchApp_Currency::getName($this->FetchApp_Currency));
         $c1 = $orderXML->addChild("custom_1", $this->Custom1);
         if (empty($this->Custom1)) {
             $c1->addAttribute("nil", "true");
@@ -570,20 +570,20 @@ class Order
             $c3->addAttribute("nil", "true");
         }
         if(is_a($this->ExpirationDate, "DateTime")) {
-            $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(\DateTime::ISO8601));
+            $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(DateTime::ISO8601));
             $expirationDateElement->addAttribute("type", "datetime");
         }
         $downloadLimitElement = $orderXML->addChild("download_limit", $this->DownloadLimit);
         $downloadLimitElement->addAttribute("type", "integer");
         $orderXML->addChild("send_email", ($sendEmailFlag ? "true" : "false"));
-        $orderItemsElement = $orderXML->addChild("order_items");
-        $orderItemsElement->addAttribute("type", "array");
+        $FetchApp_OrderItemsElement = $orderXML->addChild("order_items");
+        $FetchApp_OrderItemsElement->addAttribute("type", "array");
         foreach ($this->items as $item) {
-            $orderItem = $orderItemsElement->addChild("order_item");
-            $orderItem->addChild("sku", $item->getSKU());
-            $downloadsRemainingElement = $orderItem->addChild("downloads_remaining", $item->getDownloadsRemaining());
+            $FetchApp_OrderItem = $FetchApp_OrderItemsElement->addChild("order_item");
+            $FetchApp_OrderItem->addChild("sku", $item->getSKU());
+            $downloadsRemainingElement = $FetchApp_OrderItem->addChild("downloads_remaining", $item->getDownloadsRemaining());
             $downloadsRemainingElement->addAttribute("type", "integer");
-            $priceElement = $orderItem->addChild("price", $item->getPrice());
+            $priceElement = $FetchApp_OrderItem->addChild("price", $item->getPrice());
             $priceElement->addAttribute("type", "float");
         }
 

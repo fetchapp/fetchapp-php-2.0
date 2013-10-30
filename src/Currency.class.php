@@ -9,12 +9,13 @@
  * Time: 8:00 PM
  */
  
-namespace FetchApp\API;
-include_once "EnumEmulator.class.php";
+//namespace FetchApp\API;
+include_once "FetchApp_EnumEmulator.class.php";
 
-class Currency extends EnumEmulator
+class FetchApp_Currency extends FetchApp_EnumEmulator
 {
-    private static $className = "FetchApp\\API\\Currency";
+    //private static $className = "FetchApp\\API\\FetchApp_Currency";
+    private static $className = "FetchApp_Currency";
     /**
      * Australian Dollar
      */
@@ -59,24 +60,24 @@ class Currency extends EnumEmulator
 	/**
      * @return mixed
      */
-    public static function getName($const, $className='Currency')
+    public static function getName($const, $className='FetchApp_Currency')
     {
-        return parent::getName($const, Currency::$className);
+        return parent::getName($const, FetchApp_Currency::$className);
     }
 	
 	/**
      * @return array
      */
-    public static function getOptions($className='Currency')
+    public static function getOptions($className='FetchApp_Currency')
     {
-        return parent::getOptions(Currency::$className);
+        return parent::getOptions(FetchApp_Currency::$className);
     }
 	
 	/**
      * @return mixed
      */
-    public static function getValue($name, $className='Currency')
+    public static function getValue($name, $className='FetchApp_Currency')
     {
-        return parent::getValue($name, Currency::$className);
+        return parent::getValue($name, FetchApp_Currency::$className);
     }
 }

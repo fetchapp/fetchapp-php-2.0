@@ -9,10 +9,10 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
-class OrderDownload
+class FetchApp_OrderDownload
 {
 
     /**
@@ -36,9 +36,9 @@ class OrderDownload
     private $OrderID;
 
     /**
-     * @var $OrderItemID String
+     * @var $FetchApp_OrderItemID String
      */
-    private $OrderItemID;
+    private $FetchApp_OrderItemID;
 
     /**
      * @var $IPAddress String
@@ -46,7 +46,7 @@ class OrderDownload
     private $IPAddress;
 
     /**
-     * @var $DownloadedOn \DateTime
+     * @var $DownloadedOn DateTime
      */
     private $DownloadedOn;
 
@@ -77,15 +77,15 @@ class OrderDownload
     }
 
     /**
-     * @param \DateTime $DownloadedOn
+     * @param DateTime $DownloadedOn
      */
-    public function setDownloadedOn(\DateTime $DownloadedOn)
+    public function setDownloadedOn(DateTime $DownloadedOn)
     {
         $this->DownloadedOn = $DownloadedOn;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDownloadedOn()
     {
@@ -141,19 +141,19 @@ class OrderDownload
     }
 
     /**
-     * @param String $OrderItemID
+     * @param String $FetchApp_OrderItemID
      */
-    public function setOrderItemID($OrderItemID)
+    public function setFetchApp_OrderItemID($FetchApp_OrderItemID)
     {
-        $this->OrderItemID = $OrderItemID;
+        $this->FetchApp_OrderItemID = $FetchApp_OrderItemID;
     }
 
     /**
      * @return String
      */
-    public function getOrderItemID()
+    public function getFetchApp_OrderItemID()
     {
-        return $this->OrderItemID;
+        return $this->FetchApp_OrderItemID;
     }
 
     /**

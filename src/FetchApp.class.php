@@ -9,7 +9,7 @@
  * Time: 8:00 PM
  */
 
-namespace FetchApp\API;
+//namespace FetchApp\API;
 
 
 class FetchApp
@@ -35,7 +35,7 @@ class FetchApp
     public function setAuthenticationKey($AuthenticationKey)
     {
         $this->AuthenticationKey = $AuthenticationKey;
-        APIWrapper::setAuthenticationKey($AuthenticationKey);
+        FetchApp_APIWrapper::setAuthenticationKey($AuthenticationKey);
     }
 
     /**
@@ -52,7 +52,7 @@ class FetchApp
     public function setAuthenticationToken($AuthenticationToken)
     {
         $this->AuthenticationToken = $AuthenticationToken;
-        APIWrapper::setAuthenticationToken($AuthenticationToken);
+        FetchApp_APIWrapper::setAuthenticationToken($AuthenticationToken);
     }
 
     /**
@@ -64,13 +64,13 @@ class FetchApp
     }
 
     /**
-     * @return AccountDetail
+     * @return FetchApp_AccountDetail
      */
-    public function getAccountDetails()
+    public function getFetchApp_AccountDetails()
     {
-        APIWrapper::verifyReadiness();
-        $detail = new AccountDetail();
-        $results = APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/account", "GET");
+        FetchApp_APIWrapper::verifyReadiness();
+        $detail = new FetchApp_AccountDetail();
+        $results = FetchApp_APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/account", "GET");
         if (is_a($results, "SimpleXMLElement")) {
             $detail->setAccountID($results->id);
             $detail->setAccountName($results->name);
@@ -83,8 +83,8 @@ class FetchApp
                 $detail->setOrderExpirationInHours(-1);
             }
             $detail->setItemDownloadLimit($results->download_limit_per_item);
-            $detail->setCurrency(Currency::getValue($results->currency));
-            $detail->setCreationDate(new \DateTime($results->created_at));
+            $detail->setFetchApp_Currency(FetchApp_Currency::getValue($results->FetchApp_Currency));
+            $detail->setCreationDate(new DateTime($results->created_at));
             $detail->setAPIKey($results->api_key);
             $detail->setAPIToken($results->api_token);
         }
@@ -97,24 +97,24 @@ class FetchApp
      * @param $pageNumber
      * @return Order[]
      */
-    public function getOrders($status = OrderStatus::All, $itemsPerPage = -1, $pageNumber = -1)
+    public function getOrders($status = FetchApp_OrderStatus::All, $itemsPerPage = -1, $pageNumber = -1)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $orders = array();
         $requestURL = "https://app.fetchapp.com/api/v2/orders.xml?";
-        if ($status != OrderStatus::All) {
-            $requestURL .= "status=" . strtolower(OrderStatus::getName($status));
+        if ($status != FetchApp_OrderStatus::All) {
+            $requestURL .= "status=" . strtolower(FetchApp_OrderStatus::getName($status));
         }
         if ($itemsPerPage != -1) {
-            $requestURL .= ($status != OrderStatus::All) ? "&" : "";
+            $requestURL .= ($status != FetchApp_OrderStatus::All) ? "&" : "";
             $requestURL .= "per_page=" . $itemsPerPage;
         }
         if ($pageNumber != -1) {
-            $requestURL .= ($status != OrderStatus::All || $itemsPerPage != -1) ? "&" : "";
+            $requestURL .= ($status != FetchApp_OrderStatus::All || $itemsPerPage != -1) ? "&" : "";
             $requestURL .= "page=" . $pageNumber;
         }
         $requestURL = rtrim($requestURL, '?');
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             foreach ($results->order as $order) {
                 $tempOrder = new Order();
@@ -124,11 +124,11 @@ class FetchApp
                 $tempOrder->setLastName($order->last_name);
                 $tempOrder->setEmailAddress($order->email);
                 $tempOrder->setTotal($order->total);
-                $tempOrder->setCurrency(Currency::getValue($order->currency));
-                $tempOrder->setStatus(OrderStatus::getValue($order->status));
+                $tempOrder->setFetchApp_Currency(FetchApp_Currency::getValue($order->FetchApp_Currency));
+                $tempOrder->setStatus(FetchApp_OrderStatus::getValue($order->status));
                 $tempOrder->setProductCount($order->product_count);
                 $tempOrder->setDownloadCount($order->download_count);
-                $tempOrder->setExpirationDate(new \DateTime($order->expiration_date));
+                $tempOrder->setExpirationDate(new DateTime($order->expiration_date));
                 $tempOrder->setDownloadLimit($order->download_limit);
                 if (!isset($order->custom1['nil'])) {
                     $tempOrder->setCustom1($order->custom1);
@@ -145,7 +145,7 @@ class FetchApp
                 } else {
                     $tempOrder->setCustom3(null);
                 }
-                $tempOrder->setCreationDate(new \DateTime($order->created_at));
+                $tempOrder->setCreationDate(new DateTime($order->created_at));
                 $tempOrder->setLink($order->link['href']);
                 $orders[] = $tempOrder;
             }
@@ -160,9 +160,9 @@ class FetchApp
      */
     public function getOrder($orderID)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $orderID;
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             $tempOrder = new Order();
             $tempOrder->setOrderID($results->id);
@@ -171,11 +171,11 @@ class FetchApp
             $tempOrder->setLastName($results->last_name);
             $tempOrder->setEmailAddress($results->email);
             $tempOrder->setTotal($results->total);
-            $tempOrder->setCurrency(Currency::getValue($results->currency));
-            $tempOrder->setStatus(OrderStatus::getValue($results->status));
+            $tempOrder->setFetchApp_Currency(FetchApp_Currency::getValue($results->FetchApp_Currency));
+            $tempOrder->setStatus(FetchApp_OrderStatus::getValue($results->status));
             $tempOrder->setProductCount($results->product_count);
             $tempOrder->setDownloadCount($results->download_count);
-            $tempOrder->setExpirationDate(new \DateTime($results->expiration_date));
+            $tempOrder->setExpirationDate(new DateTime($results->expiration_date));
             $tempOrder->setDownloadLimit($results->download_limit);
             if (!isset($results->custom1['nil'])) {
                 $tempOrder->setCustom1($results->custom1);
@@ -192,7 +192,7 @@ class FetchApp
             } else {
                 $tempOrder->setCustom3(null);
             }
-            $tempOrder->setCreationDate(new \DateTime($results->created_at));
+            $tempOrder->setCreationDate(new DateTime($results->created_at));
             $tempOrder->setLink($results->link['href']);
         }
         return $tempOrder;
@@ -205,7 +205,7 @@ class FetchApp
      */
     public function getProducts($itemsPerPage = -1, $pageNumber = -1)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $products = array();
         $requestURL = "https://app.fetchapp.com/api/v2/products.xml?";
 
@@ -219,7 +219,7 @@ class FetchApp
         }
         
         $requestURL = rtrim($requestURL, '?');
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             foreach ($results->product as $product) {
                 $tempProduct = new Product();
@@ -227,13 +227,13 @@ class FetchApp
                 $tempProduct->setSKU($product->sku);
                 $tempProduct->setName($product->name);
                 $tempProduct->setPrice($product->price);
-                $tempProduct->setCurrency(Currency::getValue($product->currency));
+                $tempProduct->setFetchApp_Currency(FetchApp_Currency::getValue($product->FetchApp_Currency));
                 $tempProduct->setOrderCount($product->order_count);
                 $tempProduct->setDownloadCount($product->download_count);
                 $tempProduct->setPaypalAddToCartLink($product->paypal_add_to_cart_link['href']);
                 $tempProduct->setPaypalBuyNowLink($product->paypal_buy_now_link['href']);
                 $tempProduct->setPaypalViewCartLink($product->paypal_view_cart_link['href']);
-                $tempProduct->setCreationDate(new \DateTime($product->created_at));
+                $tempProduct->setCreationDate(new DateTime($product->created_at));
                 $tempProduct->setFilesUri($product->files_uri);
                 $tempProduct->setDownloadsUri($product->downloads_uri);
 
@@ -249,22 +249,22 @@ class FetchApp
      */
     public function getProduct($productID)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $productID;
-        $product = APIWrapper::makeRequest($requestURL, "GET");
+        $product = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($product, "SimpleXMLElement")) {
             $tempProduct = new Product();
 			$tempProduct->setProductID($product->id);
 			$tempProduct->setSKU($product->sku);
 			$tempProduct->setName($product->name);
 			$tempProduct->setPrice($product->price);
-			$tempProduct->setCurrency(Currency::getValue($product->currency));
+			$tempProduct->setFetchApp_Currency(FetchApp_Currency::getValue($product->FetchApp_Currency));
 			$tempProduct->setOrderCount($product->order_count);
 			$tempProduct->setDownloadCount($product->download_count);
 			$tempProduct->setPaypalAddToCartLink($product->paypal_add_to_cart_link['href']);
 			$tempProduct->setPaypalBuyNowLink($product->paypal_buy_now_link['href']);
 			$tempProduct->setPaypalViewCartLink($product->paypal_view_cart_link['href']);
-			$tempProduct->setCreationDate(new \DateTime($product->created_at));
+			$tempProduct->setCreationDate(new DateTime($product->created_at));
 			$tempProduct->setFilesUri($product->files_uri);
 			$tempProduct->setDownloadsUri($product->downloads_uri);
         }
@@ -274,11 +274,11 @@ class FetchApp
     /**
 	 * @param $itemsPerPage
      * @param $pageNumber
-     * @return OrderDownload[]
+     * @return FetchApp_OrderDownload[]
      */     
     public function getDownloads($itemsPerPage = -1, $pageNumber = -1)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $downloads = array();
         
         $requestURL = "https://app.fetchapp.com/api/v2/downloads.xml?";
@@ -293,17 +293,17 @@ class FetchApp
         }
         
         $requestURL = rtrim($requestURL, '?');
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             foreach ($results->download as $download) {
-                $tempDownload = new OrderDownload();
+                $tempDownload = new FetchApp_OrderDownload();
                 
                 $tempDownload->setDownloadID($download->id);
                 $tempDownload->setFileName($download->filename);
                 $tempDownload->setSKU($download->product_sku);
                 $tempDownload->setOrderID($download->order_id);
                 $tempDownload->setIPAddress($download->ip_address);
-			   	$tempDownload->setDownloadedOn(new \DateTime($download->downloaded_at));
+			   	$tempDownload->setDownloadedOn(new DateTime($download->downloaded_at));
 				$tempDownload->setSizeInBytes($download->size_bytes);
 
                 $downloads[] = $tempDownload;
@@ -316,11 +316,11 @@ class FetchApp
     /**
 	 * @param $itemsPerPage
      * @param $pageNumber
-     * @return FileDetail[]
+     * @return FetchApp_FileDetail[]
      */     
     public function getFiles($itemsPerPage = -1, $pageNumber = -1)
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $files = array();
         
         $requestURL = "https://app.fetchapp.com/api/v2/files.xml?";
@@ -335,10 +335,10 @@ class FetchApp
         }
         
         $requestURL = rtrim($requestURL, '?');
-        $results = APIWrapper::makeRequest($requestURL, "GET");
+        $results = FetchApp_APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             foreach ($results->file as $file) {
-                $tempFile = new FileDetail();
+                $tempFile = new FetchApp_FileDetail();
                 
                 $tempFile->setFileID($file->id);
                 $tempFile->setFileName($file->filename);
@@ -360,9 +360,9 @@ class FetchApp
      */
     public function getNewToken()
     {
-        APIWrapper::verifyReadiness();
+        FetchApp_APIWrapper::verifyReadiness();
         $success = false;
-        $result = APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/new_token", "GET");
+        $result = FetchApp_APIWrapper::makeRequest("https://app.fetchapp.com/api/v2/new_token", "GET");
         $this->setAuthenticationToken($result[0]);
         $success = true;
         return $success;
