@@ -1,5 +1,5 @@
 {
-    "name": "enable/fetchapp-php-2.0",
+    "name": "fetchapp/fetchapp",
     "description": "A PHP library for access to version 2.0 of the FetchApp API",
     "authors": [
         {
