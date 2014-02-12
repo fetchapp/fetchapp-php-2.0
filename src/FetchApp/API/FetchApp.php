@@ -225,7 +225,8 @@ class FetchApp
                 $tempProduct = new Product();
                 $tempProduct->setProductID($product->id);
                 $tempProduct->setSKU($product->sku);
-                $tempProduct->setName($product->name);
+				$tempProduct->setName($product->name);
+				$tempProduct->setDescription($product->description);
                 $tempProduct->setPrice($product->price);
                 $tempProduct->setCurrency(Currency::getValue($product->currency));
                 $tempProduct->setOrderCount($product->order_count);
