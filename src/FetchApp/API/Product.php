@@ -29,7 +29,12 @@ class Product
      * @var $Name string
      */
    	private $Name;
-   	
+
+	/**
+	 * @var $Description string
+	 */
+	private $Description;
+
    	/**
      * @var $Price float
      */
@@ -120,7 +125,17 @@ class Product
     /**
      * @param string $Name
      */
-    public function setName($Name){ $this->Name = $Name; }
+	public function setName($Name){ $this->Name = $Name; }
+
+	/**
+	 * @param string $Description
+	 */
+	public function setDescription($Description){ $this->Description = $Description; }
+
+	/**
+	 * @return string
+	 */
+	public function getDescription(){ return $this->Description; }
 	
 	/**
      * @return float
