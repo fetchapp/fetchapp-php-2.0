@@ -581,7 +581,7 @@ class Order
         foreach ($this->items as $item) {
             $orderItem = $orderItemsElement->addChild("order_item");
             $orderItem->addChild("sku", $item->getSKU());
-            $downloadsRemainingElement = $orderItem->addChild("downloads_remaining", $item->getDownloadsRemaining());
+            $downloadsRemainingElement = $orderItem->addChild("downloads_remaining", $item->getDownloadCount());
             $downloadsRemainingElement->addAttribute("type", "integer");
             $priceElement = $orderItem->addChild("price", $item->getPrice());
             $priceElement->addAttribute("type", "float");
