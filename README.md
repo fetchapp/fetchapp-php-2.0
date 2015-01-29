@@ -377,7 +377,7 @@ echo $product->getProductID().PHP_EOL;
     echo $product->getSKU().PHP_EOL;   
 ```
 
-### Creating an Product
+### Creating a Product
 ```php
 use FetchApp\API\Currency;
 use FetchApp\API\FetchApp;
@@ -408,7 +408,7 @@ catch (Exception $e){
 }
 ```
 
-### Updating an Product
+### Updating a Product
 ```php
 use FetchApp\API\Currency;
 use FetchApp\API\FetchApp;
@@ -435,8 +435,9 @@ catch (Exception $e){
     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
     echo $e->getMessage();
 }
+```
 
-### Deleting an Product
+### Deleting a Product
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
@@ -458,7 +459,7 @@ catch (Exception $e){
 }
 ```
 
-### Get files for an Product
+### Get files for a Product
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
@@ -479,8 +480,9 @@ catch (Exception $e){
     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
     echo $e->getMessage();
 }
+```
 
-### Get statistics for an Product
+### Get statistics for a Product
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
@@ -503,7 +505,7 @@ catch (Exception $e){
 }
 ```
 
-### Get Downloads for an Product
+### Get Downloads for a Product
 ```php
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
