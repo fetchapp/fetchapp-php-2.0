@@ -76,6 +76,10 @@ class Order
      */
     private $Custom3;
     /**
+     * @var $LicenseKey String
+     */
+    private $LicenseKey;
+    /**
      * @var $CreationDate \DateTime
      */
     private $CreationDate;
@@ -171,6 +175,22 @@ class Order
     public function getCustom3()
     {
         return $this->Custom3;
+    }
+
+    /**
+     * @param String $LicenseKey
+     */
+    public function setLicenseKey($LicenseKey)
+    {
+        $this->LicenseKey = $LicenseKey;
+    }
+
+    /**
+     * @return String
+     */
+    public function getLicenseKey()
+    {
+        return $this->LicenseKey;
     }
 
     /**
@@ -427,7 +447,7 @@ class Order
         $response = APIWrapper::makeRequest($requestURL, "GET");
 		return $response;
     }
-	
+
 	/**
      * @return mixed
      */
@@ -438,7 +458,7 @@ class Order
         $response = APIWrapper::makeRequest($requestURL, "DELETE");
 		return $response;
     }
-	
+
 	/**
      * @return mixed
      */
@@ -537,6 +557,11 @@ class Order
             } else {
                 $i->setCustom3(null);
             }
+            if (!isset($item->license_key['nil'])) {
+                $i->setLicenseKey((string)$item->license_key);
+            } else {
+                $i->setLicenseKey(null);
+            }
             $i->setCreationDate(new \DateTime($item->created_at));
 			// $i->setDownloadsRemaining(0); // We don't seem to be getting this back.
 
@@ -544,7 +569,7 @@ class Order
         }
         return $items;
     }
-	
+
 	/**
      * @return \SimpleXMLElement
      */
@@ -568,6 +593,10 @@ class Order
         $c3 = $orderXML->addChild("custom_3", $this->Custom3);
         if (empty($this->Custom3)) {
             $c3->addAttribute("nil", "true");
+        }
+        $license_key = $orderXML->addChild("license_key", $this->LicenseKey);
+        if (empty($this->LicenseKey)) {
+            $license_key->addAttribute("nil", "true");
         }
         if(is_a($this->ExpirationDate, "DateTime")) {
             $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(\DateTime::ISO8601));
