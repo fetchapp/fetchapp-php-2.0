@@ -154,8 +154,12 @@ try{
     $order->setCustom3("Derp");
     $order->setExpirationDate(new DateTime("2015/12/24"));
     $order->setDownloadLimit(12);
+
     $items = array();
     // Add items to the item array
+    $order_item = new OrderItem();
+    $order_item->setSKU('TestSKU');
+    array_push($items, $order_item);
 
     $response = $order->create($items, false);
 }
