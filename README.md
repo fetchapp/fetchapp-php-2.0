@@ -431,9 +431,9 @@ try{
     $product->setName("Test Product");
     $product->setPrice(3.00);
     $product->setCurrency(Currency::GBP);
-    $files = $product->getFiles(); // Get the existing product files
-
-    $response = $product->update($files, false);
+    
+    $urls = array(array("url" => "http://s3.aws/download.mp3", "name" => "audio"));
+    $response = $product->update($urls, false);
 }
 catch (Exception $e){
     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.

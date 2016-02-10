@@ -64,6 +64,7 @@ class APIWrapper
         curl_setopt($ch, CURLOPT_TIMEOUT, 600);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
 
         if (!is_null($data)) {
             // Apply the XML to our curl call
@@ -77,7 +78,7 @@ class APIWrapper
             throw new \Exception(curl_error($ch));
         }
         curl_close($ch);
-        
+
         if (trim($ch_data) ):
             if ($ch_data == "Couldn't authenticate you") {
                 throw new \Exception($ch_data);
@@ -89,7 +90,7 @@ class APIWrapper
         	return false;
         endif;
     }
-	
+
     /**
 	 * Verify that the authentication key and token are set
  	 * @throws \Exception
