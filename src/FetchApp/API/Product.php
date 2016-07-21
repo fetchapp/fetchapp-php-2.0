@@ -19,12 +19,12 @@ class Product
      * @var $ProductID int
      */
     private $ProductID;
-    
+
     /**
      * @var $SKU string
      */
     private $SKU;
-    
+
     /**
      * @var $Name string
      */
@@ -39,33 +39,33 @@ class Product
      * @var $Price float
      */
    	private $Price;
-   	
+
    	/**
      * @var $Currency \FetchApp\API\Currency
      */
    	private $Currency;
-   	
-   	
+
+
    	/**
      * @var $OrderCount int
      */
    	private $OrderCount;
-   	
+
    	/**
      * @var $DownloadCount int
      */
    	private $DownloadCount;
-   	
+
    	/**
      * @var $PaypalAddToCartLink string
      */
    	private $PaypalAddToCartLink;
-   	
+
    	/**
      * @var $PaypalBuyNowLink string
      */
    	private $PaypalBuyNowLink;
-   	
+
    	/**
      * @var $PaypalViewCartLink string
      */
@@ -75,53 +75,53 @@ class Product
      * @var $CreationDate \DateTime
      */
     private $CreationDate;
-    
+
     /**
      * @var $FilesUri string
      */
    	private $FilesUri;
-   	
+
    	/**
      * @var $DownloadsUri string
      */
    	private $DownloadsUri;
-   	
+
    	/**
      * @var $files array
      */
    	private $files;
-   	
-	
+   	private $item_urls;
+
     function __construct()
     {
 		$this->files = array();
     }
-    
+
     /**
      * @return int
      */
     public function getProductID(){ return $this->ProductID; }
-    
+
     /**
      * @param int $ProductID
      */
     public function setProductID($ProductID){ $this->ProductID = $ProductID; }
-	
+
 	/**
      * @return string
      */
     public function getSKU(){ return $this->SKU; }
-   
+
    	/**
      * @param string $SKU
      */
     public function setSKU($SKU){ $this->SKU = $SKU; }
-	
+
 	/**
      * @return string
      */
     public function getName(){ return $this->Name; }
-    
+
     /**
      * @param string $Name
      */
@@ -136,72 +136,72 @@ class Product
 	 * @return string
 	 */
 	public function getDescription(){ return $this->Description; }
-	
+
 	/**
      * @return float
      */
     public function getPrice(){ return $this->Price; }
-    
+
     /**
      * @param float $Price
      */
     public function setPrice($Price){ $this->Price = $Price; }
-	
+
 	/**
      * @return int
      */
     public function getOrderCount(){ return $this->OrderCount; }
-    
+
     /**
      * @param int $OrderCount
      */
     public function setOrderCount($OrderCount){ $this->OrderCount = $OrderCount; }
-	
+
 	/**
      * @return int
      */
     public function getDownloadCount(){ return $this->DownloadCount; }
-    
+
     /**
      * @param int $DownloadCount
      */
     public function setDownloadCount($DownloadCount){ $this->DownloadCount = $DownloadCount; }
-	
+
 	/**
      * @return string
      */
     public function getPaypalAddToCartLink(){ return $this->PaypalAddToCartLink; }
-    
+
     /**
      * @param string $PaypalAddToCartLink
      */
     public function setPaypalAddToCartLink($PaypalAddToCartLink){ $this->PaypalAddToCartLink = $PaypalAddToCartLink; }
-	
+
 	/**
      * @return string
      */
     public function getPaypalBuyNowLink(){ return $this->PaypalBuyNowLink; }
-   	
+
    	/**
      * @param string $PaypalBuyNowLink
      */
     public function setPaypalBuyNowLink($PaypalBuyNowLink){ $this->PaypalBuyNowLink = $PaypalBuyNowLink; }
-	
+
 	/**
      * @return string
      */
     public function getPaypalViewCartLink(){ return $this->PaypalViewCartLink; }
-    
+
     /**
      * @param string $PaypalViewCartLink
      */
     public function setPaypalViewCartLink($PaypalViewCartLink){ $this->PaypalViewCartLink = $PaypalViewCartLink; }
-	
+
     /**
      * @return string
      */
     public function getFilesUri(){ return $this->FilesUri; }
-    
+
     /**
      * @param string $FilesUri
      */
@@ -211,7 +211,7 @@ class Product
      * @return string
      */
     public function getDownloadsUri(){ return $this->DownloadsUri; }
-    
+
     /**
      * @param string $DownloadsUri
      */
@@ -287,10 +287,10 @@ class Product
      * @param array $files
      * @return mixed
      */
-    public function update(array $files)
+    public function update(array $item_urls)
     {
         APIWrapper::verifyReadiness();
-        $this->files = $files;
+        $this->item_urls = $item_urls;
 
         $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
         $data = $this->toXML();
@@ -393,7 +393,7 @@ class Product
         }
         return $files;
     }
-	
+
 	/**
      * @return \SimpleXMLElement
      */
@@ -421,12 +421,12 @@ class Product
             $creationDateElement->addAttribute("type", "datetime");
         }
 
-        $filesElement = $productXML->addChild("files");
-        $filesElement->addAttribute("type", "array");
-        foreach ($this->files as $file) {
-            $fileElm = $filesElement->addChild("file");
-            // Check This
-            $fileElm->addChild("id", $file->getFileID() );
+        $urlsElement = $productXML->addChild("item_urls");
+        $urlsElement->addAttribute("type", "array");
+        foreach ($this->item_urls as $item_url) {
+            $urlElm = $urlsElement->addChild("item_url");
+            $urlElm->addChild("name", $item_url['name']);
+            $urlElm->addChild("url", $item_url['url']);
         }
 
         return $productXML->asXML();
