@@ -222,23 +222,7 @@ class FetchApp
         $results = APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($results, "SimpleXMLElement")) {
             foreach ($results->product as $product) {
-                $tempProduct = new Product();
-                $tempProduct->setProductID($product->id);
-                $tempProduct->setSKU($product->sku);
-				$tempProduct->setName($product->name);
-				$tempProduct->setDescription($product->description);
-                $tempProduct->setPrice($product->price);
-                $tempProduct->setCurrency(Currency::getValue($product->currency));
-                $tempProduct->setOrderCount($product->order_count);
-                $tempProduct->setDownloadCount($product->download_count);
-                $tempProduct->setPaypalAddToCartLink($product->paypal_add_to_cart_link['href']);
-                $tempProduct->setPaypalBuyNowLink($product->paypal_buy_now_link['href']);
-                $tempProduct->setPaypalViewCartLink($product->paypal_view_cart_link['href']);
-                $tempProduct->setCreationDate(new \DateTime($product->created_at));
-                $tempProduct->setFilesUri($product->files_uri);
-                $tempProduct->setDownloadsUri($product->downloads_uri);
-
-                $products[] = $tempProduct;
+                $products[] = Product::fromXML($product);
             }
         }
         return $products;
@@ -254,22 +238,9 @@ class FetchApp
         $requestURL = "https://app.fetchapp.com/api/v2/products/" . $productID;
         $product = APIWrapper::makeRequest($requestURL, "GET");
         if (is_a($product, "SimpleXMLElement")) {
-            $tempProduct = new Product();
-			$tempProduct->setProductID($product->id);
-			$tempProduct->setSKU($product->sku);
-			$tempProduct->setName($product->name);
-			$tempProduct->setPrice($product->price);
-			$tempProduct->setCurrency(Currency::getValue($product->currency));
-			$tempProduct->setOrderCount($product->order_count);
-			$tempProduct->setDownloadCount($product->download_count);
-			$tempProduct->setPaypalAddToCartLink($product->paypal_add_to_cart_link['href']);
-			$tempProduct->setPaypalBuyNowLink($product->paypal_buy_now_link['href']);
-			$tempProduct->setPaypalViewCartLink($product->paypal_view_cart_link['href']);
-			$tempProduct->setCreationDate(new \DateTime($product->created_at));
-			$tempProduct->setFilesUri($product->files_uri);
-			$tempProduct->setDownloadsUri($product->downloads_uri);
+            return Product::fromXML($product);
         }
-        return $tempProduct;
+        return false;
     }
 	
     /**
