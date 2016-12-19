@@ -253,10 +253,11 @@ class Product
      * @param array $files
      * @return mixed
      */
-    public function create(array $files)
+    public function create(array $files=[], array $item_urls=[])
     {
         APIWrapper::verifyReadiness();
         $this->files = $files;
+        $this->item_urls = $item_urls;
 
         $url = "https://app.fetchapp.com/api/v2/products/create";
         $data = $this->toXML();
@@ -264,18 +265,7 @@ class Product
         $response = APIWrapper::makeRequest($url, "POST", $data);
 
         if (isset($response->id)) {
-            $this->setProductID($response->id);
-            $this->setSKU($response->sku);
-            $this->setName($response->name);
-            $this->setPrice($response->price);
-            $this->setOrderCount($response->order_count);
-            $this->setDownloadCount($response->download_count);
-            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
-            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
-            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
-            $this->setFilesUri($response->files_uri);
-            $this->setDownloadsUri($response->downloads_uri);
+            self::fromXML($response, $this);
             return true;
         } else {
             // It failed, let's return the error
@@ -287,9 +277,10 @@ class Product
      * @param array $files
      * @return mixed
      */
-    public function update(array $item_urls)
+    public function update(array $files=[], array $item_urls=[])
     {
         APIWrapper::verifyReadiness();
+        $this->files = $files;
         $this->item_urls = $item_urls;
 
         $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
@@ -297,18 +288,7 @@ class Product
 
         $response = APIWrapper::makeRequest($url, "PUT", $data);
         if (isset($response->id)) {
-            $this->setProductID($response->id);
-            $this->setSKU($response->sku);
-            $this->setName($response->name);
-            $this->setPrice($response->price);
-            $this->setOrderCount($response->order_count);
-            $this->setDownloadCount($response->download_count);
-            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
-            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
-            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
-            $this->setFilesUri($response->files_uri);
-            $this->setDownloadsUri($response->downloads_uri);
+            self::fromXML($response, $this);
             return true;
         } else {
             // It failed, let's return the error
@@ -430,5 +410,35 @@ class Product
         }
 
         return $productXML->asXML();
+    }
+
+    public static function fromXML($productXML, Product $productToUpdate = null)
+    {
+        if(!$productXML instanceof \SimpleXMLElement){
+            return false;
+        }
+
+        if($productToUpdate){
+            $product = $productToUpdate;
+        } else {
+            $product = new Product();
+        }
+
+        $product->setProductID((string)$productXML->id);
+        $product->setSKU((string)$productXML->sku);
+        $product->setName((string)$productXML->name);
+        $product->setDescription((string)$productXML->description);
+        $product->setPrice((float)$productXML->price);
+        $product->setCurrency(Currency::getValue($productXML->currency));
+        $product->setOrderCount((int)$productXML->order_count);
+        $product->setDownloadCount((int)$productXML->download_count);
+        $product->setPaypalAddToCartLink((string)$productXML->paypal_add_to_cart_link['href']);
+        $product->setPaypalBuyNowLink((string)$productXML->paypal_buy_now_link['href']);
+        $product->setPaypalViewCartLink((string)$productXML->paypal_view_cart_link['href']);
+        $product->setCreationDate(new \DateTime($productXML->created_at));
+        $product->setFilesUri((string)$productXML->files_uri);
+        $product->setDownloadsUri((string)$productXML->downloads_uri);
+
+        return $product;
     }
 }
