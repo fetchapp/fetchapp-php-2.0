@@ -225,8 +225,7 @@ class FetchApp
                 $tempProduct = new Product();
                 $tempProduct->setProductID($product->id);
                 $tempProduct->setSKU($product->sku);
-				$tempProduct->setName($product->name);
-				$tempProduct->setDescription($product->description);
+                $tempProduct->setName($product->name);
                 $tempProduct->setPrice($product->price);
                 $tempProduct->setCurrency(Currency::getValue($product->currency));
                 $tempProduct->setOrderCount($product->order_count);
@@ -367,5 +366,13 @@ class FetchApp
         $this->setAuthenticationToken($result[0]);
         $success = true;
         return $success;
+    }
+
+    /**
+     * @param bool $ssl_mode_bool
+     */
+    public function setSSLMode($ssl_mode_bool)
+    {
+        APIWrapper::setSSLMode($ssl_mode_bool);
     }
 }

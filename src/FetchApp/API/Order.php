@@ -76,10 +76,6 @@ class Order
      */
     private $Custom3;
     /**
-     * @var $LicenseKey String
-     */
-    private $LicenseKey;
-    /**
      * @var $CreationDate \DateTime
      */
     private $CreationDate;
@@ -175,22 +171,6 @@ class Order
     public function getCustom3()
     {
         return $this->Custom3;
-    }
-
-    /**
-     * @param String $LicenseKey
-     */
-    public function setLicenseKey($LicenseKey)
-    {
-        $this->LicenseKey = $LicenseKey;
-    }
-
-    /**
-     * @return String
-     */
-    public function getLicenseKey()
-    {
-        return $this->LicenseKey;
     }
 
     /**
@@ -302,7 +282,7 @@ class Order
      */
     public function getOrderID()
     {
-        return $this->OrderID;
+        return (int)$this->OrderID;
     }
 
     /**
@@ -447,7 +427,7 @@ class Order
         $response = APIWrapper::makeRequest($requestURL, "GET");
 		return $response;
     }
-
+	
 	/**
      * @return mixed
      */
@@ -458,7 +438,7 @@ class Order
         $response = APIWrapper::makeRequest($requestURL, "DELETE");
 		return $response;
     }
-
+	
 	/**
      * @return mixed
      */
@@ -557,11 +537,6 @@ class Order
             } else {
                 $i->setCustom3(null);
             }
-            if (!isset($item->license_key['nil'])) {
-                $i->setLicenseKey((string)$item->license_key);
-            } else {
-                $i->setLicenseKey(null);
-            }
             $i->setCreationDate(new \DateTime($item->created_at));
 			// $i->setDownloadsRemaining(0); // We don't seem to be getting this back.
 
@@ -569,13 +544,13 @@ class Order
         }
         return $items;
     }
-
+	
 	/**
      * @return \SimpleXMLElement
      */
     public function toXML($sendEmailFlag = true)
     {
-        $orderXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<order></order>');
+        $orderXML = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>' . '<order></order>', LIBXML_NOEMPTYTAG);
         $orderXML->addChild("id", $this->OrderID);
         $orderXML->addChild("vendor_id", $this->VendorID);
         $orderXML->addChild("first_name", $this->FirstName);
@@ -594,23 +569,23 @@ class Order
         if (empty($this->Custom3)) {
             $c3->addAttribute("nil", "true");
         }
-        $license_key = $orderXML->addChild("license_key", $this->LicenseKey);
-        if (empty($this->LicenseKey)) {
-            $license_key->addAttribute("nil", "true");
-        }
         if(is_a($this->ExpirationDate, "DateTime")) {
             $expirationDateElement = $orderXML->addChild("expiration_date", $this->ExpirationDate->format(\DateTime::ISO8601));
             $expirationDateElement->addAttribute("type", "datetime");
         }
-        $downloadLimitElement = $orderXML->addChild("download_limit", $this->DownloadLimit);
-        $downloadLimitElement->addAttribute("type", "integer");
+
+        if($this->DownloadLimit > 0) {
+            $downloadLimitElement = $orderXML->addChild("download_limit", $this->DownloadLimit);
+            $downloadLimitElement->addAttribute("type", "integer");
+        }
+        
         $orderXML->addChild("send_email", ($sendEmailFlag ? "true" : "false"));
         $orderItemsElement = $orderXML->addChild("order_items");
         $orderItemsElement->addAttribute("type", "array");
         foreach ($this->items as $item) {
             $orderItem = $orderItemsElement->addChild("order_item");
             $orderItem->addChild("sku", $item->getSKU());
-            $downloadsRemainingElement = $orderItem->addChild("downloads_remaining", $item->getDownloadCount());
+            $downloadsRemainingElement = $orderItem->addChild("downloads_remaining", $item->getDownloadsRemaining());
             $downloadsRemainingElement->addAttribute("type", "integer");
             $priceElement = $orderItem->addChild("price", $item->getPrice());
             $priceElement->addAttribute("type", "float");

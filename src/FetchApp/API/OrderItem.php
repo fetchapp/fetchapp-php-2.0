@@ -65,11 +65,6 @@ class OrderItem
     private $Custom3;
 
     /**
-     * @var $LicenseKey String
-     */
-    private $LicenseKey;
-
-    /**
      * @var $CreationDate \DateTime
      */
     private $CreationDate;
@@ -141,22 +136,6 @@ class OrderItem
     public function getCustom3()
     {
         return $this->Custom3;
-    }
-
-    /**
-     * @param String $LicenseKey
-     */
-    public function setLicenseKey($LicenseKey)
-    {
-        $this->LicenseKey = $LicenseKey;
-    }
-
-    /**
-     * @return String
-     */
-    public function getLicenseKey()
-    {
-        return $this->LicenseKey;
     }
 
     /**
@@ -270,8 +249,8 @@ class OrderItem
     {
         return $this->SKU;
     }
-
-
+    
+    
     /**
      * @return OrderDownload[] $downloads
      */
@@ -320,7 +299,7 @@ class OrderItem
         }
         return $files;
     }
-
+    
     /**
      * @return mixed
      */
