@@ -85,11 +85,17 @@ class Product
      * @var $files array
      */
    	private $files;
+
+    /**
+     * @var $item_urls array
+     */
+    private $item_urls;
    	
 	
     function __construct()
     {
 		$this->files = array();
+        $this->item_urls = array();
     }
     
     /**
@@ -236,12 +242,14 @@ class Product
 
     /**
      * @param array $files
+     * @param array $item_urls
      * @return mixed
      */
-    public function create(array $files)
+    public function create(array $files, array $item_urls = array() )
     {
         APIWrapper::verifyReadiness();
         $this->files = $files;
+        $this->item_urls = $item_urls;
 
         $url = "https://app.fetchapp.com/api/v2/products/create";
         $data = $this->toXML();
@@ -270,12 +278,14 @@ class Product
 
     /**
      * @param array $files
+     * @param array $item_urls
      * @return mixed
      */
-    public function update(array $files)
+    public function update(array $files, array $item_urls = array() )
     {
         APIWrapper::verifyReadiness();
         $this->files = $files;
+        $this->item_urls = $item_urls;
 
         $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
         $data = $this->toXML();
@@ -413,6 +423,21 @@ class Product
             // Check This
             $fileElm->addChild("id", $file->getFileID() );
         }
+
+        if(! empty($this->item_urls) ):
+            $itemUrlsElement = $productXML->addChild("item_urls");
+            $itemUrlsElement->addAttribute("type", "array");
+            foreach ($this->item_urls as $item_url) {
+                if(isset($item_url['url'])):
+                    $itemUrlsElm = $itemUrlsElement->addChild("item_url");
+                    $itemUrlsElm->addChild("url", $item_url['url'] );
+                    
+                    if(isset($item_url['name'])):
+                        $itemUrlsElm->addChild("name", $item_url['name'] );
+                    endif;
+                endif;
+            }
+        endif;
 
         return $productXML->asXML();
     }

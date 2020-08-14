@@ -402,9 +402,12 @@ try{
     $product->setCurrency(Currency::GBP);
 
     $files = array();
-    // Add files to the file array
+    // Add exisitng FileDetail objects
 
-    $response = $product->create($files, false);
+    $item_urls = array(array("url" => "http://s3.aws/download.mp3", "name" => "audio"));
+    // Add new external URLs for files in the above format 
+
+    $response = $product->create($files, $item_urls);
 }
 catch (Exception $e){
     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
@@ -431,9 +434,14 @@ try{
     $product->setName("Test Product");
     $product->setPrice(3.00);
     $product->setCurrency(Currency::GBP);
+
+    $files = $product->getFiles();
+    // Get the existing files attached to the product
+
+    $item_urls = array(array("url" => "http://s3.aws/download.mp3", "name" => "audio"));
+    // Add new external URLs for files in the above format 
     
-    $urls = array(array("url" => "http://s3.aws/download.mp3", "name" => "audio"));
-    $response = $product->update($urls, false);
+    $response = $product->update($files, $item_urls);
 }
 catch (Exception $e){
     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
