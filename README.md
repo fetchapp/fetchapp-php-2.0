@@ -405,7 +405,7 @@ try{
     // Add exisitng FileDetail objects
 
     $item_urls = array(array("url" => "http://s3.aws/download.mp3", "name" => "audio"));
-    // Add new external URLs for files in the above format 
+    // Add external URLs for files in the above format 
 
     $response = $product->create($files, $item_urls);
 }
@@ -439,7 +439,7 @@ try{
     // Get the existing files attached to the product
 
     $item_urls = array(array("url" => "http://s3.aws/download.mp3", "name" => "audio"));
-    // Add new external URLs for files in the above format 
+    // Add external URLs for files in the above format 
     
     $response = $product->update($files, $item_urls);
 }
