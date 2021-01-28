@@ -282,7 +282,7 @@ class Order
      */
     public function getOrderID()
     {
-        return (int)$this->OrderID;
+        return (string)$this->OrderID;
     }
 
     /**
