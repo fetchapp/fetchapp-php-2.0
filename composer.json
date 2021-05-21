@@ -20,6 +20,9 @@
             "FetchApp": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": { "FetchApp\\Tests\\": "tests/" }
+    },
     "require-dev": {
         "phpunit/phpunit": "^9",
         "vlucas/phpdotenv": "^5.3"

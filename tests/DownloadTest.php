@@ -1,29 +1,13 @@
 <?php declare(strict_types=1);
 
+namespace FetchApp\Tests;
+
 use FetchApp\API\FetchApp;
 use FetchApp\API\Product;
 use FetchApp\API\OrderDownload;
-use PHPUnit\Framework\TestCase;
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/..');
-$dotenv->load();
-
-final class DownloadTest extends TestCase
+final class DownloadTest extends FetchAppBaseTest
 {
-    private static $fetch;
-
-        public static function setUpBeforeClass(): void
-    {
-        self::$fetch = new FetchApp();
-        self::$fetch->setAuthenticationKey($_ENV['FETCH_API_KEY']);
-        self::$fetch->setAuthenticationToken($_ENV['FETCH_API_TOKEN']);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        self::$fetch = null;
-    }
-
     public function testClass(): void
     {
         $fetch = self::$fetch;

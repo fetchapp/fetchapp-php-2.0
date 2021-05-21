@@ -1,34 +1,14 @@
 <?php declare(strict_types=1);
 
+namespace FetchApp\Tests;
 
-use FetchApp\API\Currency;
 use FetchApp\API\FetchApp;
-use FetchApp\API\Product;
-use FetchApp\API\FileDetail;
 use FetchApp\API\OrderStatus;
-
 use FetchApp\API\Order;
 use FetchApp\API\OrderItem;
-use PHPUnit\Framework\TestCase;
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/..');
-$dotenv->load();
-
-final class OrderTest extends TestCase
+final class OrderTest extends FetchAppBaseTest
 {
-    private static $fetch;
-
-    public static function setUpBeforeClass(): void
-    {
-        self::$fetch = new FetchApp();
-        self::$fetch->setAuthenticationKey($_ENV['FETCH_API_KEY']);
-        self::$fetch->setAuthenticationToken($_ENV['FETCH_API_TOKEN']);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        self::$fetch = null;
-    }
     public function testOrders(): void
     {
         $fetch = self::$fetch;
