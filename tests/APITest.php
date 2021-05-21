@@ -97,37 +97,4 @@ final class APITest extends TestCase
         $this->assertSame((int)$_ENV['TEST_SINGLE_ORDER_ID'], $order->getOrderId());
         $this->assertSame($_ENV['TEST_SINGLE_ORDER_VENDOR_ID'], $order->getVendorID());
     }
-
-    // public function testCannotBeCreatedFromInvalidEmailAddress(): void
-    // {
-    //     $this->expectException(InvalidArgumentException::class);
-
-    //     Email::fromString('invalid');
-    // }
-
-    // public function testCanBeUsedAsString(): void
-    // {
-    //     $this->assertEquals(
-    //         'user@example.com',
-    //         Email::fromString('user@example.com')
-    //     );
-    // }
 }
-
-
-
-
-// try{
-//     // ACCOUNT
-//     if(false):
-//         $account = $fetch->getAccountDetails();//    That was easy!
-//     // Let's write some of the available Data to the page!
-//         var_dump($account);
-//         echo $account->getAccountID();
-//         echo $account->getAccountName();
-//         echo $account->getBillingEmail();
-//         echo $account->getEmailAddress();
-//         echo $account->getURL();
-//         echo $account->getItemDownloadLimit();
-//         echo $account->getOrderExpirationInHours();
-//     endif;
