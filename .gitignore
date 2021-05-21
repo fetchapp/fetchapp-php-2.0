@@ -1,4 +1,5 @@
 .env
+composeer.lock
 test3.php
 sample.php
 
