@@ -251,28 +251,18 @@ class Product
         $this->files = $files;
         $this->item_urls = $item_urls;
 
-        $url = "https://app.fetchapp.com/api/v2/products/create";
-        $data = $this->toXML();
+        $url = "/products";
+        $data = $this->toPostData();
 
         $response = APIWrapper::makeRequest($url, "POST", $data);
 
-        if (isset($response->id)) {
-            $this->setProductID($response->id);
-            $this->setSKU($response->sku);
-            $this->setName($response->name);
-            $this->setPrice($response->price);
-            $this->setOrderCount($response->order_count);
-            $this->setDownloadCount($response->download_count);
-            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
-            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
-            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
-            $this->setFilesUri($response->files_uri);
-            $this->setDownloadsUri($response->downloads_uri);
+        if (isset($response->product->id)) {
+            $product = $response->product;
+            $this->loadFromJSON($product);
             return true;
         } else {
             // It failed, let's return the error
-            return $response[0];
+            return $response;
         }
     }
 
@@ -287,28 +277,19 @@ class Product
         $this->files = $files;
         $this->item_urls = $item_urls;
 
-        $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
-        $data = $this->toXML();
+        $url = "/products/" . $this->ProductID; 
+        $data = $this->toPostData();
 
         $response = APIWrapper::makeRequest($url, "PUT", $data);
-        if (isset($response->id)) {
-            $this->setProductID($response->id);
-            $this->setSKU($response->sku);
-            $this->setName($response->name);
-            $this->setPrice($response->price);
-            $this->setOrderCount($response->order_count);
-            $this->setDownloadCount($response->download_count);
-            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
-            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
-            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
-            $this->setFilesUri($response->files_uri);
-            $this->setDownloadsUri($response->downloads_uri);
+
+        if (isset($response->product->id)) :
+            $product = $response->product;
+            $this->loadFromJSON($product);
             return true;
-        } else {
+        else:
             // It failed, let's return the error
-            return $response[0];
-        }
+            return $response;
+        endif;
     }
 
 	/**
@@ -317,9 +298,11 @@ class Product
     public function delete()
     {
         APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/delete";
-		$response = APIWrapper::makeRequest($requestURL, "DELETE");
-		return $response;
+        $url = "/products/" . $this->ProductID;
+        $response = APIWrapper::makeRequest($url, "DELETE");
+        var_dump($url);
+var_dump($response);
+        return $response;
     }
 
     /**
@@ -327,21 +310,17 @@ class Product
      */
     public function getDownloads()
     {
-        APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/downloads";
-        $downloads = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
-        foreach ($results->download as $d) {
-            $download = new OrderDownload();
-            $download->setDownloadID((string)$d->id);
-            $download->setFileName((string)$d->filename);
-            $download->setSKU((string)$d->product_sku);
-            $download->setOrderID((string)$d->order_id);
-            $download->setOrderItemID((string)$d->order_item_id);
-            $download->setIPAddress((string)$d->ip_address);
-            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
-            $download->setSizeInBytes((int)$d->size_bytes);
 
+        APIWrapper::verifyReadiness();
+
+        $requestURL = "/products/" . $this->ProductID . "/downloads";
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+
+        $downloads = array();
+
+        foreach ($results->downloads as $json_download) {
+            $download = new OrderDownload();
+            $download->loadFromJSON($json_download);
             $downloads[] = $download;
         }
         return $downloads;
@@ -371,19 +350,14 @@ class Product
     public function getFiles()
     {
         APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/files";
+
+        $requestURL = "/products/" . $this->ProductID . "/files";
+
         $files = array();
         $results = APIWrapper::makeRequest($requestURL, "GET");
-        foreach ($results->file as $file) {
+        foreach ($results->files as $json_file) {
             $tempFile = new FileDetail();
-
-            $tempFile->setFileID($file->id);
-            $tempFile->setFileName($file->filename);
-            $tempFile->setSizeInBytes($file->size_bytes);
-            $tempFile->setContentType($file->content_type);
-            $tempFile->setPermalink($file->permalink);
-            $tempFile->setURL($file->url);
-
+            $tempFile->loadFromJSON($json_file);
             $files[] = $tempFile;
         }
         return $files;
@@ -440,5 +414,75 @@ class Product
         endif;
 
         return $productXML->asXML();
+    }
+
+    public function toPostData(){
+        $json_object = new \stdClass();
+
+        $json_object->id = $this->ProductID;
+        $json_object->sku = $this->SKU;
+        $json_object->name = $this->Name;
+        $json_object->price = $this->Price;
+        $json_object->currency = Currency::getName($this->Currency);
+
+        // TODO: Check API 
+        // $json_object->paypal_add_to_cart_link = $this->PaypalAddToCartLink;
+        // $json_object->paypal_buy_now_link = $this->PaypalBuyNowLink;
+        // $json_object->paypal_view_cart_link = $this->PaypalViewCartLink;
+        // $json_object->files_uri = $this->FilesUri;
+        // $json_object->downloads_uri = $this->DownloadsUri;
+
+        if(is_a($this->CreationDate, "DateTime")) :
+            $json_object->created_at = $this->CreationDate->format(\DateTime::ISO8601);
+        endif;
+
+        $json_object->files = [];
+        foreach ($this->files as $file) :
+            if($file->getFileID() ):
+                $fileElm = new \stdClass();
+                $fileElm->id = $file->getFileID();
+                $json_object->files[] = $fileElm;
+            endif;
+        endforeach;
+
+        $json_object->item_urls = [];
+        foreach ($this->item_urls as $item_url) :
+            if(isset($item_url['url'])):
+                $itemUrlsElm = new \stdClass();
+                $itemUrlsElm->url = $item_url['url'];
+                
+                if(isset($item_url['name'])):
+                    $itemUrlsElm->name = $item_url['name'];
+                endif;
+            endif;
+        endforeach;
+
+        $output = array('product' => $json_object);
+        return $output;
+    }
+
+    public function loadFromJSON($json){
+        if (is_object($json) ) :
+            $this->setProductID($json->id);
+            $this->setSKU($json->sku);
+            $this->setName($json->name);
+            $this->setPrice($json->price);
+            $this->setCurrency(Currency::getValue($json->currency));
+            $this->setOrderCount($json->orders_count);
+            $this->setDownloadCount($json->download_count);
+            
+            // TODO: NEED IN API
+            // $this->setPaypalAddToCartLink($json->paypal_add_to_cart_link['href']);
+            // $this->setPaypalBuyNowLink($json->paypal_buy_now_link['href']);
+            // $this->setPaypalViewCartLink($json->paypal_view_cart_link['href']);
+
+            $this->setCreationDate(new \DateTime($json->created_at));
+
+            // TODO: NEED IN API
+            // $this->setFilesUri($json->files_uri);
+            // $this->setDownloadsUri($json->downloads_uri);
+        endif;
+        
+        return true;
     }
 }
