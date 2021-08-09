@@ -30,14 +30,14 @@ class FetchAppBaseTest extends TestCase
         self::$fetch = null;
     }
 
-    // public function testFetchAppClass(): void
-    // {
-    //     $fetch = self::$fetch;
-    //     $this->assertInstanceOf(
-    //         FetchApp::class,
-    //         $fetch
-    //     );
-    // }
+    public function testFetchAppClass(): void
+    {
+        $fetch = self::$fetch;
+        $this->assertInstanceOf(
+            FetchApp::class,
+            $fetch
+        );
+    }
 
     // public function testClass(): void
     // {
