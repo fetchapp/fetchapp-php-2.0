@@ -9,18 +9,37 @@ use FetchApp\API\FileDetail;
 
 final class OrderItemTest extends FetchAppBaseTest
 {
+    public static $baseClass = OrderItem::class;
+
     public function testClass(): void
     {
-        $fetch = self::$fetch;
-            
-        $order = $fetch->getOrderByID($_ENV['TEST_SINGLE_ORDER_ID']);
+        $item = self::testSingle();
+        
+        $this->assertInstanceOf(
+            self::$baseClass,
+            $item
+        );
+    }
+
+    public function testSingle(): OrderItem
+    {
+        $order = $this->_getTestOrder();
         $items = $order->getItems(); // Get the existing order items
 
         $this->assertIsArray($items);
         $this->assertNotEmpty($items);
         $this->assertInstanceOf(
-            OrderItem::class,
+            self::$baseClass,
             $items[0]
         );
+        return $items[0];
+    }
+
+    public function testFiles(): Array{
+        return $this->_doFileTest();
+    }
+
+    public function testDownloads(): Array{
+        return $this->_doDownloadTest();
     }
 }

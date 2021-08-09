@@ -300,8 +300,6 @@ class Product
         APIWrapper::verifyReadiness();
         $url = "/products/" . $this->ProductID;
         $response = APIWrapper::makeRequest($url, "DELETE");
-        var_dump($url);
-var_dump($response);
         return $response;
     }
 
