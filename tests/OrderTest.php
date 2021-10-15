@@ -7,6 +7,7 @@ use FetchApp\API\OrderStatus;
 use FetchApp\API\Order;
 use FetchApp\API\OrderDownload;
 use FetchApp\API\OrderItem;
+use FetchApp\API\Currency;
 
 final class OrderTest extends FetchAppBaseTest
 {
@@ -65,44 +66,60 @@ final class OrderTest extends FetchAppBaseTest
         $this->assertSame($_ENV['TEST_SINGLE_ORDER_VENDOR_ID'], $order->getVendorID());
     }
 
-    public function testCreateOrder(): void
+    public function testCreateOrder(): Order
     {
         $fetch = self::$fetch;
 
-        // $order = new Order();
+        $order = new Order();
+        $random_vendor_id = "M010".time();
 
         // // PRC TODO: SETTING ID IS IGNORED
         // // $order->setOrderID("B008");
 
-        // $order->setFirstName("James");
-        // $order->setLastName("Bond");
-        // $order->setEmailAddress("007@prcapps.com");
+        $order->setFirstName("James");
+        $order->setLastName("Bond");
+        $order->setEmailAddress("007@prcapps.com");
 
-        // $order->setVendorID("M010");
+        $order->setVendorID($random_vendor_id);
 
-        // $order->setCurrency(Currency::GBP);
-        // $order->setCustom1("Herp");
-        // $order->setCustom3("Derp");
-        // $order->setExpirationDate(new DateTime("2015/12/24"));
-        // $order->setDownloadLimit(12);
+        $order->setCurrency(Currency::GBP);
+        $order->setCustom1("Herp");
+        $order->setCustom3("Derp");
+        $order->setExpirationDate(new \DateTime("2015/12/24"));
+        $order->setDownloadLimit(12);
 
-        // $items = array();
-        // // Add items to the item array
-        // $order_item = new OrderItem();
-        // $order_item->setItemID(3464729);
-        // // $order_item->setSKU('TestSKU');
-        // array_push($items, $order_item);
+        $items = array();
+        // Add items to the item array
+        $order_item = new OrderItem();
+        $order_item->setItemID(3464729);
+        // $order_item->setSKU('TestSKU');
+        array_push($items, $order_item);
 
-        // $response = $order->create($items, false);
+        $response = $order->create($items, false);
 
-        // var_dump($response);
+        $this->assertTrue($response);
+        $this->assertNotNull($order->getOrderID());
+        $this->assertSame($random_vendor_id, $order->getVendorID());
+        // PRC - Can add extra fields
 
-        // var_dump($order);
+        // Create a product with the same Vendor ID should fail
+        $null_order = new Order();
 
-        $this->assertSame(false, true);
+        $null_order->setFirstName("James");
+        $null_order->setLastName("Bond");
+        $null_order->setEmailAddress("007@prcapps.com");
 
+        $null_order->setVendorID($random_vendor_id);
+        $null_order->setCurrency(Currency::GBP);
+
+        $response = $null_order->create($items, false);
+
+        $this->assertSame(0, $null_order->getOrderID());
+
+        return $order;
     }
 
+    // PRC TODO
     public function testUpdateOrder(): void
     {
         $fetch = self::$fetch;
@@ -130,6 +147,7 @@ final class OrderTest extends FetchAppBaseTest
 
     }
 
+    // PRC TODO
     public function testDeleteOrder(): void
     {
         $fetch = self::$fetch;
@@ -169,6 +187,7 @@ final class OrderTest extends FetchAppBaseTest
 
     }
 
+    // PRC TODO
     // PRC - Note this functionality is removed
     public function testOrderStats(): void
     {
@@ -178,8 +197,7 @@ final class OrderTest extends FetchAppBaseTest
 
     public function testDownloads(): Array
     {
-        $fetch = self::$fetch;
-        $order = $fetch->getOrder($_ENV['TEST_SAMPLE_VENDOR_ORDER_ID']);
+        $order = $this->_getTestOrder();
 
         $this->assertInstanceOf(
             Order::class,
