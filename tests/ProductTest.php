@@ -23,6 +23,22 @@ final class ProductTest extends FetchAppBaseTest
         );
     }
 
+    public function testList(): void
+    {
+        $fetch = self::$fetch;
+
+        $products = $fetch->getProducts(); 
+
+        $this->assertIsArray($products);
+        $this->assertNotEmpty($products);
+
+        $products = $fetch->getProducts(2, 2);
+
+        $this->assertIsArray($products);
+        $this->assertNotEmpty($products);
+        $this->assertCount(2, $products);
+    }
+
     public function testSingle(): Product
     {
         $fetch = self::$fetch;
@@ -94,7 +110,6 @@ final class ProductTest extends FetchAppBaseTest
         return $product;
     }
 
-    // PRC - TODO
     public function testDelete(): void
     {
         $fetch = self::$fetch;

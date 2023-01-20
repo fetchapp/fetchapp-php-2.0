@@ -423,9 +423,37 @@ class Order
     public function expire()
     {
         APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/expire";
-        $response = APIWrapper::makeRequest($requestURL, "GET");
+
+        $requestURL = "/orders/" . $this->OrderID . "/expire";
+        $response = APIWrapper::makeRequest($requestURL, "POST");
+
 		return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function reopen()
+    {
+        APIWrapper::verifyReadiness();
+
+        $requestURL = "/orders/" . $this->OrderID . "/reopen";
+        $response = APIWrapper::makeRequest($requestURL, "POST");
+
+        return $response;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function resend()
+    {
+        APIWrapper::verifyReadiness();
+
+        $requestURL = "/orders/" . $this->OrderID . "/resend";
+        $response = APIWrapper::makeRequest($requestURL, "POST");
+
+        return $response;
     }
 	
 	/**
@@ -444,36 +472,24 @@ class Order
      * @return mixed
      */
     public function sendDownloadEmail($resetExpiration = true, \DateTime $expirationDate = null, $downloadLimit = -1)
-    {
-        APIWrapper::verifyReadiness();
+    {   
+        $update_required = false;
+        if($resetExpiration && $expirationDate):
+            $this->setExpirationDate($expirationDate);
+            $update_required = true;
+        endif;
 
-        // TODO: Handle resetExpiration
+        if($downloadLimit !== -1):
+            $this->setDownloadLimit((int)$downloadLimit);
+            $update_required = true;
+        endif;
 
-        // TODO: Double-check this
-        $this->setDownloadLimit((int)$downloadLimit);
-        $this->setExpirationDate($expirationDate);
-        $items = $this->getItems();
+        if($update_required):
+            $items = $this->getItems();
+            $this->update($items);
+        endif;
 
-        $sendEmail = true;
-
-        return $this->update($items, $sendEmail);
-
-        // TODO: Remove old version 
-        // $requestURL = "https://app.fetchapp.com/api/v2/orders/" . $this->OrderID . "/send_email?";
-        // if ($resetExpiration === false) {
-        //     $requestURL .= "reset_expiration=false";
-        // } else {
-        //     if ($expirationDate != null) {
-        //         $requestURL .= "expiration_date=" . $expirationDate->format(\DateTime::ISO8601);
-        //     }
-        //     if ($downloadLimit != -1) {
-        //         $requestURL .= ($expirationDate != null) ? "&" : "";
-        //         $requestURL .= "download_limit=" . $downloadLimit;
-        //     }
-        // }
-        // $requestURL = rtrim($requestURL, '?');
-        // $response = APIWrapper::makeRequest($requestURL, "POST");
-        // return $response;
+        return $this->resend();
     }
 
     /**

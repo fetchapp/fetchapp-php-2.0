@@ -11,7 +11,7 @@ use FetchApp\API\Currency;
 
 final class OrderTest extends FetchAppBaseTest
 {
-    public function testOrders(): void
+    public function testList(): void
     {
         $fetch = self::$fetch;
 
@@ -43,7 +43,7 @@ final class OrderTest extends FetchAppBaseTest
         );
     }
 
-    public function testSingleOrder(): void
+    public function testSingleOrderByOrderID(): void
     {
         $fetch = self::$fetch;
         $order = $fetch->getOrderByID($_ENV['TEST_SINGLE_ORDER_ID']);
@@ -55,8 +55,14 @@ final class OrderTest extends FetchAppBaseTest
 
         $this->assertSame((int)$_ENV['TEST_SINGLE_ORDER_ID'], $order->getOrderId());
         $this->assertSame($_ENV['TEST_SINGLE_ORDER_VENDOR_ID'], $order->getVendorID());
+    }
+
+    public function testSingleOrderByVendorId(): void
+    {
+        $fetch = self::$fetch;
 
         $order = $fetch->getOrder($_ENV['TEST_SINGLE_ORDER_VENDOR_ID']);
+
         $this->assertInstanceOf(
             Order::class,
             $order
@@ -66,12 +72,12 @@ final class OrderTest extends FetchAppBaseTest
         $this->assertSame($_ENV['TEST_SINGLE_ORDER_VENDOR_ID'], $order->getVendorID());
     }
 
-    public function testCreateOrder(): Order
+    public function testCreate(): Order
     {
         $fetch = self::$fetch;
 
         $order = new Order();
-        $random_vendor_id = "M010".time();
+        $random_vendor_id = "M010".rand();
 
         // // PRC TODO: SETTING ID IS IGNORED
         // // $order->setOrderID("B008");
@@ -119,72 +125,57 @@ final class OrderTest extends FetchAppBaseTest
         return $order;
     }
 
-    // PRC TODO
-    public function testUpdateOrder(): void
+    public function testUpdate(): void
     {
         $fetch = self::$fetch;
 
-        //         $order = $fetch->getOrder(68453243);
+        $order = $this->testCreate();
+        $items = $order->getItems(); // Get the existing order items
+
+
+        $new_first_name = "JamesUPDATE";
+        $new_last_name = "BondUPDATE";
+        $new_email = "008@prcapps.com";
+        $new_vendor_id = "UPDATE_VID".time();
+        // $new_order_id = "B008".time();
 
         // // PRC TODO: SETTING ID Breaks call to get items
-        // // $order->setOrderID("B008");
+        // $order->setOrderID($new_order_id);
 
-        // $order->setFirstName("James");
-        // $order->setLastName("Bond");
-        // $order->setEmailAddress("007@mi6.com");
-        // $order->setVendorID("PRC789");
+        $order->setFirstName($new_first_name);
+        $order->setLastName($new_last_name);
+        $order->setEmailAddress($new_email);
+        $order->setVendorID($new_vendor_id);
         // $order->setCurrency(Currency::GBP);
         // $order->setCustom1("Herp");
         // $order->setCustom3("Derp");
         // $order->setExpirationDate(new DateTime("2015/12/24"));
-        // $order->setDownloadLimit(12);
-        // $items = $order->getItems(); // Get the existing order items
+        $order->setDownloadLimit(123);
 
-        // $response = $order->update($items, false);
-        // var_dump($response);
+        $response = $order->update($items, false);
 
-        $this->assertSame(false, true);
-
+        // $this->assertTrue($response);
+        $this->assertNotFalse($order);
+        $this->assertNotNull($order->getOrderID());
+        $this->assertSame($new_first_name, $order->getFirstName());
+        $this->assertSame($new_last_name, $order->getLastName());
+        $this->assertSame($new_email, $order->getEmailAddress());
+        $this->assertSame($new_vendor_id, $order->getVendorID());
     }
 
-    // PRC TODO
-    public function testDeleteOrder(): void
+    public function testDelete(): void
     {
         $fetch = self::$fetch;
 
-        //         $order = new Order();
+        $order = $this->testCreate();
+        $delete_order_id = $order->getOrderID();
+        $order = $fetch->getOrderByID($delete_order_id);
 
-        // $order->setFirstName("James");
-        // $order->setLastName("Bond");
-        // $order->setEmailAddress("007@prcapps.com");
+        $this->assertNotFalse($order);
 
-        // $order->setVendorID("TOBEDELETED03");
-
-        // $order->setCurrency(Currency::GBP);
-        // $order->setCustom1("Herp");
-        // $order->setCustom3("Derp");
-        // $order->setExpirationDate(new DateTime("2015/12/24"));
-        // $order->setDownloadLimit(12);
-
-        // $items = array();
-        // // Add items to the item array
-        // $order_item = new OrderItem();
-        // $order_item->setItemID(3464729);
-        // // $order_item->setSKU('TestSKU');
-        // array_push($items, $order_item);
-
-        // $response = $order->create($items, false);
-
-        // // var_dump($order);
-
-        // $delete_order_id = $order->getOrderID();
-
-        // var_dump($delete_order_id);
-        // $response = $order->delete();
-        // var_dump($response);
-
-        $this->assertSame(false, true);
-
+        $response = $order->delete();
+        $order = $fetch->getOrderByID($delete_order_id);
+        $this->assertFalse($order);
     }
 
     // PRC TODO
@@ -219,34 +210,75 @@ final class OrderTest extends FetchAppBaseTest
         return $downloads;
     }
 
-    // PRC - Note sure if I do this or not 
     public function testOrderExpire(): void
     {
-        $fetch = self::$fetch;
-        $this->assertSame(false, true);
+        $order = $this->_getTestOrder();
+
+        $this->assertInstanceOf(
+            Order::class,
+            $order
+        );
+
+        $response = $order->expire();
+
+        $this->assertSame($response->order->status, 'expired');
+
+        $order = $this->_getTestOrder();
+
+        $this->assertSame($order->getStatus() , OrderStatus::getValue('expired') );
+    }
+
+    public function testOrderReopen(): void
+    {
+        $order = $this->_getTestOrder();
+
+        $this->assertInstanceOf(
+            Order::class,
+            $order
+        );
+
+        $response = $order->reopen();
+
+        $this->assertSame($response->order->status, 'open');
+
+        $order = $this->_getTestOrder();
+
+        $this->assertSame($order->getStatus() , OrderStatus::getValue('open') );
     }
 
     public function testOrderResendEmail(): void
     {
-        $fetch = self::$fetch;
+        $order = $this->_getTestOrder();
 
-        // try{
-        //     $order = $fetch->getOrder("68906333");
-        //     $order->setEmailAddress("patrick@prcapps.com");
+        $this->assertInstanceOf(
+            Order::class,
+            $order
+        );
 
-        //     $items = $order->getItems(); // Get the existing order items
+        $response = $order->reopen();
 
-        //     $response = $order->update($items, true);
-        //     var_dump($response);
+        $this->assertSame($response->order->status, 'open');
 
-        //     $response = $order->sendDownloadEmail();
-        //     var_dump($response);
-        // }
-        // catch (Exception $e){
-        //     // This will occur on any call if the AuthenticationKey and AuthenticationToken are not set.
-        //     echo $e->getMessage();
-        // }
+        $order = $this->_getTestOrder();
 
-        $this->assertSame(false, true);
+        $this->assertSame($order->getStatus() , OrderStatus::getValue('open') );
+    }
+
+    public function testOrderSendDownloadEmail(): void
+    {
+        $order = $this->_getTestOrder();
+
+        $this->assertInstanceOf(
+            Order::class,
+            $order
+        );
+
+        $response = $order->sendDownloadEmail();
+
+        $this->assertSame($response->order->status, 'open');
+
+        $order = $this->_getTestOrder();
+
+        $this->assertSame($order->getStatus() , OrderStatus::getValue('open') );
     }
 }
