@@ -251,28 +251,18 @@ class Product
         $this->files = $files;
         $this->item_urls = $item_urls;
 
-        $url = "https://app.fetchapp.com/api/v2/products/create";
-        $data = $this->toXML();
+        $url = "/products";
+        $data = $this->toPostData();
 
         $response = APIWrapper::makeRequest($url, "POST", $data);
 
-        if (isset($response->id)) {
-            $this->setProductID($response->id);
-            $this->setSKU($response->sku);
-            $this->setName($response->name);
-            $this->setPrice($response->price);
-            $this->setOrderCount($response->order_count);
-            $this->setDownloadCount($response->download_count);
-            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
-            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
-            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
-            $this->setFilesUri($response->files_uri);
-            $this->setDownloadsUri($response->downloads_uri);
+        if (isset($response->product->id)) {
+            $product = $response->product;
+            $this->loadFromJSON($product);
             return true;
         } else {
             // It failed, let's return the error
-            return $response[0];
+            return $response;
         }
     }
 
@@ -281,34 +271,73 @@ class Product
      * @param array $item_urls
      * @return mixed
      */
-    public function update(array $files, array $item_urls = array() )
+    public function update($files=false, $item_urls = false )
     {
         APIWrapper::verifyReadiness();
-        $this->files = $files;
-        $this->item_urls = $item_urls;
 
-        $url = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/update";
-        $data = $this->toXML();
+        $update_files = false;
+        $update_item_urls = false;
+
+        if($files !== false):
+            $this->files = $files;
+            $update_files = true;
+        endif;
+
+        if($item_urls !== false):
+            $this->item_urls = $item_urls;
+            $update_item_urls = true;
+        endif;
+
+        $url = "/products/" . $this->ProductID; 
+        $data = $this->toPostData($update_files, $update_item_urls);
 
         $response = APIWrapper::makeRequest($url, "PUT", $data);
-        if (isset($response->id)) {
-            $this->setProductID($response->id);
-            $this->setSKU($response->sku);
-            $this->setName($response->name);
-            $this->setPrice($response->price);
-            $this->setOrderCount($response->order_count);
-            $this->setDownloadCount($response->download_count);
-            $this->setPaypalAddToCartLink($response->paypal_add_to_cart_link);
-            $this->setPaypalBuyNowLink($response->paypal_buy_now_link);
-            $this->setPaypalViewCartLink($response->paypal_view_cart_link);
-            $this->setCreationDate(new \DateTime($response->created_at));
-            $this->setFilesUri($response->files_uri);
-            $this->setDownloadsUri($response->downloads_uri);
+
+        if (isset($response->product->id)) :
+            $product = $response->product;
+            $this->loadFromJSON($product);
             return true;
-        } else {
+        else:
             // It failed, let's return the error
-            return $response[0];
+            return $response;
+        endif;
+    }
+
+    /**
+     * @param array $files
+     * @param array $item_urls
+     * @return mixed
+     */
+    public function updateBySku($files=false, $item_urls = false )
+    {
+        APIWrapper::verifyReadiness();
+
+        $update_files = false;
+        $update_item_urls = false;
+
+        if($files !== false){
+            $this->files = $files;
+            $update_files = true;
         }
+
+        if($item_urls !== false):
+            $this->item_urls = $item_urls;
+            $update_item_urls = true;
+        endif;
+
+        $url = "/skuproducts/" . $this->getSKU(); 
+        $data = $this->toPostData($update_files, $update_item_urls);
+
+        $response = APIWrapper::makeRequest($url, "PUT", $data);
+
+        if (isset($response->product->id)) :
+            $product = $response->product;
+            $this->loadFromJSON($product);
+            return true;
+        else:
+            // It failed, let's return the error
+            return $response;
+        endif;
     }
 
 	/**
@@ -317,9 +346,9 @@ class Product
     public function delete()
     {
         APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/delete";
-		$response = APIWrapper::makeRequest($requestURL, "DELETE");
-		return $response;
+        $url = "/products/" . $this->ProductID;
+        $response = APIWrapper::makeRequest($url, "DELETE");
+        return $response;
     }
 
     /**
@@ -327,21 +356,17 @@ class Product
      */
     public function getDownloads()
     {
-        APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/downloads";
-        $downloads = array();
-        $results = APIWrapper::makeRequest($requestURL, "GET");
-        foreach ($results->download as $d) {
-            $download = new OrderDownload();
-            $download->setDownloadID((string)$d->id);
-            $download->setFileName((string)$d->filename);
-            $download->setSKU((string)$d->product_sku);
-            $download->setOrderID((string)$d->order_id);
-            $download->setOrderItemID((string)$d->order_item_id);
-            $download->setIPAddress((string)$d->ip_address);
-            $download->setDownloadedOn(new \DateTime($d->downloaded_at));
-            $download->setSizeInBytes((int)$d->size_bytes);
 
+        APIWrapper::verifyReadiness();
+
+        $requestURL = "/products/" . $this->ProductID . "/downloads";
+        $results = APIWrapper::makeRequest($requestURL, "GET");
+
+        $downloads = array();
+
+        foreach ($results->downloads as $json_download) {
+            $download = new OrderDownload();
+            $download->loadFromJSON($json_download);
             $downloads[] = $download;
         }
         return $downloads;
@@ -371,19 +396,14 @@ class Product
     public function getFiles()
     {
         APIWrapper::verifyReadiness();
-        $requestURL = "https://app.fetchapp.com/api/v2/products/" . $this->ProductID . "/files";
+
+        $requestURL = "/products/" . $this->ProductID . "/files";
+
         $files = array();
         $results = APIWrapper::makeRequest($requestURL, "GET");
-        foreach ($results->file as $file) {
+        foreach ($results->files as $json_file) {
             $tempFile = new FileDetail();
-
-            $tempFile->setFileID($file->id);
-            $tempFile->setFileName($file->filename);
-            $tempFile->setSizeInBytes($file->size_bytes);
-            $tempFile->setContentType($file->content_type);
-            $tempFile->setPermalink($file->permalink);
-            $tempFile->setURL($file->url);
-
+            $tempFile->loadFromJSON($json_file);
             $files[] = $tempFile;
         }
         return $files;
@@ -440,5 +460,94 @@ class Product
         endif;
 
         return $productXML->asXML();
+    }
+
+    public function toPostData($update_files = true, $update_item_urls=true){
+        $json_object = new \stdClass();
+
+        $json_object->id = $this->ProductID;
+        $json_object->sku = (string)$this->SKU;
+        $json_object->name = $this->Name;
+        $json_object->price = $this->Price;
+        $json_object->currency = Currency::getName($this->Currency);
+
+        // TODO: Check API 
+        // $json_object->paypal_add_to_cart_link = $this->PaypalAddToCartLink;
+        // $json_object->paypal_buy_now_link = $this->PaypalBuyNowLink;
+        // $json_object->paypal_view_cart_link = $this->PaypalViewCartLink;
+        // $json_object->files_uri = $this->FilesUri;
+        // $json_object->downloads_uri = $this->DownloadsUri;
+
+        if(is_a($this->CreationDate, "DateTime")) :
+            $json_object->created_at = $this->CreationDate->format(\DateTime::ISO8601);
+        endif;
+
+        if($update_files):
+            $json_object->item_assets = [];
+            foreach ($this->files as $file) :
+                if($file->getFileID() ):
+                    $json_object->item_assets[] = $file->getFileID();
+                endif;
+            endforeach;
+        endif;
+
+        if($update_item_urls):
+            $json_object->item_urls = [];
+            foreach ($this->item_urls as $item_url) :
+                if(is_object($item_url)):
+                    if(isset($item_url->url)):
+                        $itemUrlsElm = new \stdClass();
+                        $itemUrlsElm->url = $item_url->url;
+                        
+                        if(isset($item_url->name)):
+                            $itemUrlsElm->name = $item_url->name;
+                        endif;
+
+                        $json_object->item_urls[] = $itemUrlsElm;
+                    endif;
+                elseif(is_array($item_url) ):
+                    if(isset($item_url['url'])):
+                        $itemUrlsElm = new \stdClass();
+                        $itemUrlsElm->url = $item_url['url'];
+                        
+                        if(isset($item_url['name'])):
+                            $itemUrlsElm->name = $item_url['name'];
+                        endif;
+
+                        $json_object->item_urls[] = $itemUrlsElm;
+                    endif;
+                endif;
+            endforeach;
+        endif;
+
+        $output = array('product' => $json_object);
+        return $output;
+    }
+
+    public function loadFromJSON($json){
+        if (is_object($json) ) :
+            $this->setProductID($json->id);
+            $this->setSKU($json->sku);
+            $this->setName($json->name);
+            $this->setPrice($json->price);
+            $this->setCurrency(Currency::getValue($json->currency));
+            $this->setOrderCount($json->orders_count);
+            $this->setDownloadCount($json->download_count);
+            
+            // TODO: NEED IN API
+            // $this->setPaypalAddToCartLink($json->paypal_add_to_cart_link['href']);
+            // $this->setPaypalBuyNowLink($json->paypal_buy_now_link['href']);
+            // $this->setPaypalViewCartLink($json->paypal_view_cart_link['href']);
+
+            $this->setCreationDate(new \DateTime($json->created_at));
+
+            $this->item_urls = $json->item_urls;
+
+            // TODO: NEED IN API
+            // $this->setFilesUri($json->files_uri);
+            // $this->setDownloadsUri($json->downloads_uri);
+        endif;
+        
+        return true;
     }
 }
