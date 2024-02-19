@@ -209,7 +209,7 @@ class Product
     public function setDownloadsUri($DownloadsUri){ $this->DownloadsUri = $DownloadsUri; }
 
     /**
-     * @return string
+     * @return array
      */
     public function getItems(){ return $this->item_urls; }
 	
