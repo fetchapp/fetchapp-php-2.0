@@ -211,7 +211,7 @@ class Product
     /**
      * @return string
      */
-    public function getItems(){ return $this->items_url; }
+    public function getItems(){ return $this->item_urls; }
 	
     /**
      * @param \DateTime $CreationDate
