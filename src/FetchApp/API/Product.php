@@ -209,6 +209,11 @@ class Product
     public function setDownloadsUri($DownloadsUri){ $this->DownloadsUri = $DownloadsUri; }
 
     /**
+     * @return string
+     */
+    public function getItems(){ return $this->items_url; }
+	
+    /**
      * @param \DateTime $CreationDate
      */
     public function setCreationDate($CreationDate)
